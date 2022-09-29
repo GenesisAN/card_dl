@@ -1,5 +1,7 @@
 <template>
-  <hello-world />
+  <div>
+    <hello-world />
+  </div>
 </template>
 
 <script lang="ts">
@@ -8,7 +10,6 @@ import HelloWorld from "../components/HelloWorld.vue";
 
 export default Vue.extend({
   name: "HomeView",
-
   components: {
     HelloWorld,
   },

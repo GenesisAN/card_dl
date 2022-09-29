@@ -26,6 +26,9 @@
         <span class="mr-2">Support</span>
         <v-icon>mdi-professional-hexagon</v-icon>
       </v-btn>
+      <v-btn @click="about" target="_blank" text>
+        <span>About</span>
+      </v-btn>
       <v-spacer></v-spacer>
 
       <v-btn target="_blank" text @click="login">
@@ -55,6 +58,9 @@ export default Vue.extend({
   methods: {
     login() {
       this.$router.push("/login");
+    },
+    about() {
+      this.$router.push("/about");
     },
     register() {
       this.$router.push("/register");

@@ -1,3 +1,9 @@
 {
-  "message": "hello i18n !!"
+  "message": "hello i18n !!",
+  "gallery": "gallery",
+  "upload": "upload",
+  "support": "support",
+  "about": "about",
+  "login": "login",
+  "register": "register"
 }

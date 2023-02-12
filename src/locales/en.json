@@ -1,9 +1,14 @@
 {
   "message": "hello i18n !!",
-  "gallery": "gallery",
-  "upload": "upload",
-  "support": "support",
-  "about": "about",
-  "login": "login",
-  "register": "register"
+  "gallery": "Gallery",
+  "upload": "Upload",
+  "support": "Support",
+  "about": "About",
+  "login": "Login",
+  "register": "Register",
+  "settings": "Settings",
+  "language": "Language",
+  "select_language": "Select Language",
+  "email": "E-mail",
+  "password": "Password"
 }

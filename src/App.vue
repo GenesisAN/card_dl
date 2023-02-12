@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-app-bar app>
-      <div>
+      <div class="mx-14">
         <h1 class="display-1 font-weight-bold">CardDL</h1>
       </div>
       <v-btn @click="$router.push('/')" target="_blank" text>
@@ -42,19 +42,19 @@
         </template>
         <v-card>
           <v-card-title class="text-h5 grey lighten-2">
-            Web Setting
+            {{ $t("settings") }}
           </v-card-title>
           <v-col>
             <v-container fluid>
               <v-row align="center">
                 <v-col cols="6">
-                  <v-subheader> Language </v-subheader>
+                  <v-subheader>{{ $t("language") }} </v-subheader>
                 </v-col>
                 <v-col cols="6">
                   <v-select
                     v-model="set_lange"
                     :items="states"
-                    label="Select Language"
+                    :label="$t('select_language')"
                     menu-props="auto"
                   ></v-select>
                 </v-col>

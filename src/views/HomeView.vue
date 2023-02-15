@@ -5,14 +5,14 @@
         v-for="(card, index) in list"
         :key="card.MD5"
         class="flex-column"
-        width="352px"
+        width="176px"
       >
         <div
           class="card-thumb-wrapper relative"
           @mouseover="hover = index"
           @mouseleave="hover = -1"
         >
-          <v-img :src="card.Thumb" min-height="252px" min-width="352px">
+          <v-img :src="card.Thumb" min-height="126px" min-width="176px">
             <v-card-title
               v-if="index === hover"
               class="card-toolbar absolute pd-h3 flex-row-between w-100"

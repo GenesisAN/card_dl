@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-
+import createPersistedState from "vuex-persistedstate";
 Vue.use(Vuex);
 export interface UserData {
   id: number;
@@ -20,14 +20,16 @@ export default new Vuex.Store({
     isLogin: false,
     userInfo: {} as UserData,
   },
-  actions: {
+  mutations: {
     setupUserInfo(state: any, userInfo: UserData) {
       state.userInfo = userInfo;
       console.log("logged in.", userInfo);
       localStorage.setItem("user-info", btoa(JSON.stringify(userInfo)));
     },
     setLogin(state: any, isLogin: boolean) {
+      console.log("isLogin:", isLogin);
       state.isLogin = isLogin;
+      console.log(" state.isLogin:", state.isLogin);
     },
   },
   getters: {
@@ -35,7 +37,9 @@ export default new Vuex.Store({
       return state.userInfo;
     },
     getLoginStatus(state: any) {
+      console.log("getUserInfo:", state.isLogin);
       return state.isLogin;
     },
   },
+  plugins: [createPersistedState()],
 });

@@ -31,5 +31,7 @@
   "new_password_min_length": "新修改密码长度至少为8位",
   "confirm_new_password_required": "确认新密码是必填项",
   "confirm_new_password_not_match": "两次输入的新密码不一致",
-  "forgot_password": "忘记密码"
+  "forgot_password": "忘记密码",
+  "edit_account": "编辑账户",
+  "logout": "退出登录"
 }

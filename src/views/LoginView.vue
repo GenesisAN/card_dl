@@ -78,8 +78,8 @@ export default class LoginView extends Vue {
       })
       .then((res) => {
         if (res.data.code === 0) {
-          this.$store.dispatch("setupUserInfo", res.data.data);
-          this.$store.dispatch("setLogin", true);
+          this.$store.commit("setupUserInfo", res.data.data);
+          this.$store.commit("setLogin", true);
           this.$router.push("/");
         } else {
           this.passwordError = res.data.msg;

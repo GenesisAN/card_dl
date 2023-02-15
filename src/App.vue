@@ -26,7 +26,9 @@
         <span>{{ $t("about") }}</span>
       </v-btn>
       <v-spacer></v-spacer>
-      <User />
+      <div class="user-container" style="margin-right: 20px">
+        <User />
+      </div>
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on">

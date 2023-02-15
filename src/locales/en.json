@@ -31,5 +31,7 @@
   "new_password_min_length": "New Password must be at least 8 characters",
   "confirm_new_password_required": "Confirm New Password is required",
   "confirm_new_password_not_match": "Confirm New Password does not match",
-  "forgot_password": "Forgot Password"
+  "forgot_password": "Forgot Password",
+  "edit_account": "Edit Account",
+  "logout": "Logout"
 }

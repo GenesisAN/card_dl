@@ -48,6 +48,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Ref } from "vue-property-decorator";
+import { mapActions, mapState } from "vuex";
 import axios from "axios";
 @Ref("form")
 @Component
@@ -59,6 +60,7 @@ export default class LoginView extends Vue {
     (v: string) => !!v || this.$t("email_required"),
     (v: string) => /.+@.+/.test(v) || this.$t("email_invalid"),
   ];
+  showLogin = false;
   passwordRules = [
     (v: string) => !!v || this.$t("password_required"),
     (v: string) => v.length >= 8 || this.$t("password_min_length"),
@@ -76,6 +78,8 @@ export default class LoginView extends Vue {
       })
       .then((res) => {
         if (res.data.code === 0) {
+          this.$store.dispatch("setupUserInfo", res.data.data);
+          this.$store.dispatch("setLogin", true);
           this.$router.push("/");
         } else {
           this.passwordError = res.data.msg;

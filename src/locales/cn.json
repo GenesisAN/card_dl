@@ -27,6 +27,7 @@
   "new_password": "新密码",
   "confirm_new_password": "确认新密码",
   "npr": "新密码是必填项",
+  "new_password_required": "新密码是必填项",
   "new_password_min_length": "新修改密码长度至少为8位",
   "confirm_new_password_required": "确认新密码是必填项",
   "confirm_new_password_not_match": "两次输入的新密码不一致",

@@ -26,14 +26,7 @@
         <span>{{ $t("about") }}</span>
       </v-btn>
       <v-spacer></v-spacer>
-
-      <v-btn target="_blank" text @click="login">
-        <span>{{ $t("login") }}</span>
-      </v-btn>
-      <v-btn target="_blank" text @click="register">
-        <span class="mr-2">{{ $t("register") }}</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+      <User />
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on">
@@ -61,7 +54,6 @@
               </v-row>
             </v-container>
           </v-col>
-
           <v-divider></v-divider>
 
           <v-card-actions>
@@ -80,8 +72,10 @@
 
 <script lang="ts">
 import Vue from "vue";
+import User from "./components/User.vue";
 export default Vue.extend({
   name: "App",
+  components: { User },
 
   data: () => ({
     dialog: false,
@@ -90,14 +84,8 @@ export default Vue.extend({
     //
   }),
   methods: {
-    login() {
-      this.$router.push("/login");
-    },
     about() {
       this.$router.push("/about");
-    },
-    register() {
-      this.$router.push("/register");
     },
     changlange() {
       this.dialog = false;

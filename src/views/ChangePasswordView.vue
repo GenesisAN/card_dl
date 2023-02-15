@@ -2,24 +2,25 @@
   <div class="register-box">
     <v-card class="elevation-12">
       <v-toolbar dark color="primary">
+        <v-icon>mdi-form-textbox-password</v-icon>
         <v-toolbar-title>{{ $t("change_password") }}</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-form class="mx-0" ref="form">
           <v-text-field
-            v-model="password"
+            v-model="new_password"
             prepend-icon="mdi-lock"
-            :label="$t('password')"
+            :label="$t('new_password')"
             type="password"
-            :rules="passwordRules"
+            :rules="newPasswordRules"
             required
           />
           <v-text-field
-            v-model="confirmPassword"
+            v-model="confirm_new_password"
             prepend-icon="mdi-lock"
-            :label="$t('confirm_password')"
+            :label="$t('confirm_new_password')"
             type="password"
-            :rules="confirmPasswordRules"
+            :rules="confirmNewPasswordRules"
             required
           />
         </v-form>
@@ -40,32 +41,39 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Ref, Vue } from "vue-property-decorator";
+@Ref("form")
 @Component
 export default class ChangePasswordView extends Vue {
   token = "";
-  password = "";
-  confirmPassword = "";
+  new_password = "";
+  confirm_new_password = "";
   changePasswordError = "";
-  passwordRules = [
-    (v: string) => !!v || this.$t("password_required"),
-    (v: string) => v.length >= 8 || this.$t("password_min_length"),
+  newPasswordRules = [
+    (v: string) => !!v || this.$t("npr"),
+    (v: string) => v.length >= 8 || this.$t("new_password_min_length"),
   ];
-
-  confirmPasswordRules = [
-    (v: string) => !!v || this.$t("confirm_password_required"),
-    (v: string) => v.length >= 8 || this.$t("confirm_password_min_length"),
-    (v: string) => v === this.password || this.$t("confirm_password_not_match"),
+  confirmNewPasswordRules = [
+    (v: string) => !!v || this.$t("confirm_new_password_required"),
+    (v: string) =>
+      v === this.new_password || this.$t("confirm_new_password_not_match"),
   ];
   mounted() {
     this.token = this.$route.params.token;
+    this.$t("new_password_required");
+    this.$t("confirm_new_password_required");
   }
+  @Ref("form")
+  private form!: HTMLFormElement;
   change_password_submit() {
+    if (!this.form.validate()) {
+      return;
+    }
     this.$store
       .dispatch("changePassword", {
         token: this.token,
-        password: this.password,
-        confirmPassword: this.confirmPassword,
+        password: this.new_password,
+        confirmPassword: this.confirm_new_password,
       })
       .then(() => {
         this.$router.push("/login");

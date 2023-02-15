@@ -2,7 +2,8 @@
   <div class="register-box">
     <v-card class="elevation-12">
       <v-toolbar dark color="primary">
-        <v-toolbar-title>{{ $t("register") }}</v-toolbar-title>
+        <v-icon>mdi-account-edit</v-icon>
+        <v-toolbar-title>{{ $t("user_register") }}</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-form class="mx-0" ref="form">
@@ -84,7 +85,6 @@ export default class RegisterView extends Vue {
 
   confirmPasswordRules = [
     (v: string) => !!v || this.$t("confirm_password_required"),
-    (v: string) => v.length >= 8 || this.$t("confirm_password_min_length"),
     (v: string) => v === this.password || this.$t("confirm_password_not_match"),
   ];
   @Ref("form")

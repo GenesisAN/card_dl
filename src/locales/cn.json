@@ -4,8 +4,10 @@
   "upload": "上传",
   "support": "支持",
   "about": "关于",
+  "user_login": "用户登录",
   "login": "登录",
   "register": "注册",
+  "user_register": "用户注册",
   "settings": "设置",
   "language": "语言",
   "select_language": "选择语言",
@@ -20,9 +22,13 @@
   "password_min_length": "密码长度至少为8位",
   "confirm_password": "确认密码",
   "confirm_password_required": "确认密码是必填项",
-  "confirm_password_min_length": "确认密码长度至少为8位",
   "confirm_password_not_match": "两次输入的密码不一致",
-  "change_password": "修改密码"
-
-
+  "change_password": "修改密码",
+  "new_password": "新密码",
+  "confirm_new_password": "确认新密码",
+  "npr": "新密码是必填项",
+  "new_password_min_length": "新修改密码长度至少为8位",
+  "confirm_new_password_required": "确认新密码是必填项",
+  "confirm_new_password_not_match": "两次输入的新密码不一致",
+  "forgot_password": "忘记密码"
 }

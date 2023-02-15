@@ -2,7 +2,8 @@
   <div class="login_box">
     <v-card class="elevation-12">
       <v-toolbar dark color="primary">
-        <v-toolbar-title>{{ $t("login") }}</v-toolbar-title>
+        <v-icon>mdi-account</v-icon>
+        <v-toolbar-title>{{ $t("user_login") }}</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-form class="mx-0" ref="form">
@@ -13,6 +14,7 @@
             :label="$t('email')"
             type="text"
             :rules="emailRules"
+            required
           ></v-text-field>
           <v-text-field
             id="password"
@@ -22,9 +24,10 @@
             :label="$t('password')"
             type="password"
             :rules="passwordRules"
+            required
           ></v-text-field>
           <div style="text-align: right">
-            <a @click="$router.push('/')">{{ $t("forget_password") }}</a>
+            <a @click="$router.push('/')">{{ $t("forgot_password") }}</a>
           </div>
           <template v-if="passwordError">
             <p class="text-danger text-center">{{ passwordError }}</p>
@@ -37,7 +40,7 @@
           width="300px"
           class="mx-auto"
           @click="login_submit"
-          >Login</v-btn
+          >{{ $t("login") }}</v-btn
         >
       </v-card-actions>
     </v-card>

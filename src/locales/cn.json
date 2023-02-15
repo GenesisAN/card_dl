@@ -9,6 +9,20 @@
   "settings": "设置",
   "language": "语言",
   "select_language": "选择语言",
+  "nickname": "昵称",
+  "nickname_required": "昵称是必填项",
+  "nickname_min_length": "昵称长度至少为2位",
   "email": "邮箱",
-  "password": "密码"
+  "email_required": "邮箱是必填项",
+  "email_invalid": "邮箱格式不正确",
+  "password": "密码",
+  "password_required": "密码是必填项",
+  "password_min_length": "密码长度至少为8位",
+  "confirm_password": "确认密码",
+  "confirm_password_required": "确认密码是必填项",
+  "confirm_password_min_length": "确认密码长度至少为8位",
+  "confirm_password_not_match": "两次输入的密码不一致",
+  "change_password": "修改密码"
+
+
 }

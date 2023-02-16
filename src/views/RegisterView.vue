@@ -8,7 +8,7 @@
       <v-card-text>
         <v-form class="mx-0" ref="form">
           <v-text-field
-            v-model="nickname"
+            v-model="regform.nickname"
             prepend-icon="mdi-account"
             :label="$t('nickname')"
             type="email"
@@ -16,27 +16,27 @@
             required
           />
           <v-text-field
-            v-model="email"
+            v-model="regform.user_email"
             prepend-icon="mdi-email"
             :label="$t('email')"
             type="email"
-            :rules="emailRules"
+            :rules="regEmailRules"
             required
           />
           <v-text-field
-            v-model="password"
+            v-model="regform.password"
             prepend-icon="mdi-lock"
             :label="$t('password')"
             type="password"
-            :rules="passwordRules"
+            :rules="regPasswordRules"
             required
           />
           <v-text-field
-            v-model="confirmPassword"
+            v-model="regform.password_confirm"
             prepend-icon="mdi-lock"
             :label="$t('confirm_password')"
             type="password"
-            :rules="confirmPasswordRules"
+            :rules="regConfirmPasswordRules"
             required
           />
         </v-form>
@@ -60,32 +60,36 @@
 <script lang="ts">
 import { Component, Vue, Ref } from "vue-property-decorator";
 import axios from "axios";
+import request from "@/uitls/request";
 @Ref("form")
 @Component
 export default class RegisterView extends Vue {
-  nickname = "";
-  email = "";
-  password = "";
-  confirmPassword = "";
+  regform: any = {
+    nickname: "",
+    user_email: "",
+    password: "",
+    password_confirm: "",
+  };
 
   registerError = "";
   nicknameRules = [
     (v: string) => !!v || this.$t("nickname_required"),
     (v: string) => v.length >= 2 || this.$t("nickname_min_length"),
   ];
-  emailRules = [
+  regEmailRules = [
     (v: string) => !!v || this.$t("email_required"),
     (v: string) => /.+@.+/.test(v) || this.$t("email_invalid"),
   ];
 
-  passwordRules = [
+  regPasswordRules = [
     (v: string) => !!v || this.$t("password_required"),
     (v: string) => v.length >= 8 || this.$t("password_min_length"),
   ];
 
-  confirmPasswordRules = [
+  regConfirmPasswordRules = [
     (v: string) => !!v || this.$t("confirm_password_required"),
-    (v: string) => v === this.password || this.$t("confirm_password_not_match"),
+    (v: string) =>
+      v === this.regform.password || this.$t("confirm_password_not_match"),
   ];
   @Ref("form")
   private form!: HTMLFormElement;
@@ -93,22 +97,18 @@ export default class RegisterView extends Vue {
     if (!this.form.validate()) {
       return;
     }
-    axios
-      .post("http://localhost:3000/api/v1/user/register", {
-        nickname: this.nickname,
-        user_email: this.email,
-        password: this.password,
-        password_confirm: this.confirmPassword,
-      })
-      .then((res) => {
-        if (res.data.code === 0) {
+    this.$store
+      .dispatch("ex_register", this.regform)
+      .then((res: any) => {
+        console.log(res);
+        if (res.code === 0) {
           this.$router.push("/");
         } else {
-          this.registerError = res.data.msg;
+          this.registerError = res.msg;
         }
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((err: any) => {
+        this.registerError = err.response.msg;
       });
   }
 }

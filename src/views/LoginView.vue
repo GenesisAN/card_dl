@@ -71,22 +71,20 @@ export default class LoginView extends Vue {
     if (!this.form.validate()) {
       return;
     }
-    axios
-      .post("http://localhost:3000/api/v1/user/login", {
+    this.$store
+      .dispatch("ex_login", {
         user_email: this.email,
         password: this.password,
       })
-      .then((res) => {
-        if (res.data.code === 0) {
-          this.$store.commit("setupUserInfo", res.data.data);
-          this.$store.commit("setLogin", true);
+      .then((res: any) => {
+        if (res.code === 0) {
           this.$router.push("/");
         } else {
           this.passwordError = res.data.msg;
         }
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((err: any) => {
+        this.passwordError = err.response.data.msg;
       });
   }
 }

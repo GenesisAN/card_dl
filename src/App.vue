@@ -60,7 +60,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="changlange"> Setting </v-btn>
+            <v-btn color="primary" text @click="chang_lange"> Setting </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -89,7 +89,7 @@ export default Vue.extend({
     about() {
       this.$router.push("/about");
     },
-    changlange() {
+    chang_lange() {
       this.dialog = false;
       switch (this.set_lange) {
         case "English":
@@ -103,7 +103,7 @@ export default Vue.extend({
   mounted() {
     if (localStorage.set_lange) {
       this.set_lange = localStorage.set_lange;
-      this.changlange();
+      this.chang_lange();
     }
   },
   watch: {

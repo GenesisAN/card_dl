@@ -1,45 +1,33 @@
 import Vue from "vue";
+import "es6-promise/auto";
 import Vuex from "vuex";
-import createPersistedState from "vuex-persistedstate";
+import VuexPersistence from "vuex-persist";
+import userActions, { UserData } from "./actions/user";
 Vue.use(Vuex);
-export interface UserData {
-  id: number;
-  user_email: string;
-  nickname: string;
-  status: string;
-  avatar: string;
-  created_at: number;
-  user_type: number;
-  about: string;
-  comment_block: boolean;
-  upload_block: boolean;
-  block_reason: string;
-}
+
+const vuexLocal = new VuexPersistence({
+  storage: window.localStorage,
+  modules: ["userData", "isLogin"],
+});
 export default new Vuex.Store({
   state: {
+    // 是否登录
     isLogin: false,
-    userInfo: {} as UserData,
+    // 用户信息
+    userData: {} as UserData,
   },
   mutations: {
-    setupUserInfo(state: any, userInfo: UserData) {
-      state.userInfo = userInfo;
-      console.log("logged in.", userInfo);
-      localStorage.setItem("user-info", btoa(JSON.stringify(userInfo)));
+    setUserData(state: any, userData: UserData) {
+      console.log("setUserData", userData);
+      state.userData = userData;
     },
-    setLogin(state: any, isLogin: boolean) {
-      console.log("isLogin:", isLogin);
+    setIsLogin(state: any, isLogin: boolean) {
+      console.log("setIsLogin", isLogin);
       state.isLogin = isLogin;
-      console.log(" state.isLogin:", state.isLogin);
     },
   },
-  getters: {
-    getUserInfo(state: any) {
-      return state.userInfo;
-    },
-    getLoginStatus(state: any) {
-      console.log("getUserInfo:", state.isLogin);
-      return state.isLogin;
-    },
+  actions: {
+    ...userActions,
   },
-  plugins: [createPersistedState()],
+  plugins: [vuexLocal.plugin],
 });

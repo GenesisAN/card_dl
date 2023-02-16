@@ -25,8 +25,11 @@
             color="#000000FF"
             z-index="0"
           >
-            <v-avatar>
-              <img :src="card.uploaderAvatar" alt="card.uploader" />
+            <v-avatar color="brown" size="48">
+              <img v-if="card.uploaderAvatar" :src="card.uploaderAvatar" />
+              <span v-else class="white--text text-h5">{{
+                card.AvatarName
+              }}</span>
             </v-avatar>
             <p color="#white">{{ card.uploader }}</p>
             <v-btn @click="download(card)">Donwload</v-btn>
@@ -91,7 +94,8 @@ export default Vue.extend({
               item.Thumb = `//127.0.0.1:3000/api/v1/card/thumd/${item.CardType}/${item.MD5}.jpg`;
               item.Path = `//127.0.0.1:3000/api/v1/card/image/${item.CardType}/${item.MD5}.png`;
               item.uploader = item?.UploadUserInfo?.nickname ?? "匿名";
-              item.uploaderAvatar = item?.UploadUserInfo?.avatar ?? "匿名";
+              item.uploaderAvatar = item?.UploadUserInfo?.avatar ?? "";
+              item.AvatarName = item.uploader.slice(0, 1).toUpperCase();
               this.list.push(item);
             });
             $state.loaded();

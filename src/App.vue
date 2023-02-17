@@ -7,11 +7,7 @@
       <v-btn @click="$router.push('/')" target="_blank" text>
         <span>{{ $t("gallery") }}</span>
       </v-btn>
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
+      <v-btn @click="$router.push('/card_upload')" target="_blank" text>
         <span>{{ $t("upload") }}</span>
       </v-btn>
       <v-btn

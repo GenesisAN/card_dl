@@ -10,14 +10,15 @@
       <v-btn @click="$router.push('/card_upload')" target="_blank" text>
         <span>{{ $t("upload") }}</span>
       </v-btn>
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
+      <v-btn target="_blank" text>
         <span class="mr-2">{{ $t("support") }}</span>
         <v-icon>mdi-professional-hexagon</v-icon>
       </v-btn>
+      <v-btn target="_blank" text>
+        <span class="mr-2">{{ $t("support") }}</span>
+        <v-icon>mdi-professional-hexagon</v-icon>
+      </v-btn>
+
       <v-btn @click="about" target="_blank" text>
         <span>{{ $t("about") }}</span>
       </v-btn>

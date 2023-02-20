@@ -1,7 +1,6 @@
 import router from "@/router";
 import store from "@/store";
 import axios, { AxiosRequestConfig } from "axios";
-
 const { VUE_APP_URL, VUE_APP_URL_HTTPS, NODE_ENV } = process.env;
 const http = VUE_APP_URL_HTTPS === "true" ? "https" : "http";
 console.log(
@@ -9,7 +8,8 @@ console.log(
 );
 // 创建axios实例，在这里可以设置请求的默认配置
 const request = axios.create({
-  timeout: 10000, // 设置超时时间10s
+  withCredentials: true,
+  timeout: 60000, // 设置超时时间10s
   // baseURL: NODE_ENV.indexOf('production') !== -1 ? '/web/' : `${http}://${VUE_APP_URL}` // `${http}://${VUE_APP_URL}`  //根据自己配置的反向代理去设置不同环境的baeUrl
   baseURL: `${http}://${VUE_APP_URL}`,
 });
@@ -20,6 +20,8 @@ request.interceptors.response.use(
     //   // loadingSpin.close()
     // }, 1000)
     const { status, data = {} } = response;
+    console.log("响应拦截器:", response);
+    //const cookie = response.headers['set-cookie'];
     // switch (data.code) {
     //   case 401:
     //     // 接口无权限自动跳转登录页面

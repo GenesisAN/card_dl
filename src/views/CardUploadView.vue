@@ -5,8 +5,109 @@
         <v-icon>mdi-account</v-icon>
         <v-toolbar-title>Card Upload</v-toolbar-title>
       </v-toolbar>
-      <v-form style="margin-top: 40px">
-        <v-file-input v-model="file" show-size label="PNG input"></v-file-input>
+      <v-card class="image_card">
+        <v-card-title v-if="selectedImage">
+          <v-img
+            contain
+            max-height="352"
+            class="image_height"
+            :src="selectedImage"
+          >
+          </v-img>
+          <v-card-text class="text-center">
+            <v-divider></v-divider>
+            {{ file.name }}{{ file_name_ex }}
+          </v-card-text>
+          <v-row v-if="!CardExist" justify="center" style="margin-top: 20px">
+            <v-expansion-panels accordion>
+              <v-expansion-panel>
+                <v-expansion-panel-header>
+                  卡片信息:{{
+                    UploadInfoTemp.data.card_type
+                  }}</v-expansion-panel-header
+                >
+                <v-expansion-panel-content>
+                  <v-row dense>
+                    <v-col cols="12">
+                      {{ UploadInfoTemp.data.char_info.firstname }}
+                      {{
+                        UploadInfoTemp.data.char_info.firstname &&
+                        UploadInfoTemp.data.char_info.lastname
+                          ? "-"
+                          : ""
+                      }}
+                      {{ UploadInfoTemp.data.char_info.lastname }}
+                      ({{
+                        UploadInfoTemp.data.char_info.sex == 0
+                          ? "男性"
+                          : "女性"
+                      }})
+                    </v-col>
+                    <v-col
+                      cols="12"
+                      v-if="UploadInfoTemp.data.char_info.nickname"
+                    >
+                      昵称:{{ UploadInfoTemp.data.char_info.nickname }}
+                    </v-col>
+                  </v-row>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+              <v-expansion-panel>
+                <v-expansion-panel-header
+                  >插件数量:{{ plugin_list.length }}</v-expansion-panel-header
+                >
+                <v-expansion-panel-content>
+                  <v-row dense>
+                    <v-col
+                      style="font-size: 14px"
+                      v-for="(item, index) in plugin_list"
+                      :key="index"
+                      cols="12"
+                    >
+                      [{{ index + 1 }}]: {{ item }}
+                    </v-col>
+                  </v-row>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+              <v-expansion-panel>
+                <v-expansion-panel-header
+                  >Mod数量:{{ zipmod_list.size }}</v-expansion-panel-header
+                >
+                <v-expansion-panel-content>
+                  <v-row dense>
+                    <v-col
+                      style="font-size: 14px"
+                      v-for="(item, index) in zipmod_list.keys()"
+                      :key="index"
+                      cols="12"
+                    >
+                      [{{ index + 1 }}]: {{ item }}
+                    </v-col>
+                  </v-row></v-expansion-panel-content
+                >
+              </v-expansion-panel>
+            </v-expansion-panels>
+          </v-row>
+        </v-card-title>
+        <v-card-actions>
+          <v-file-input
+            v-model="file"
+            show-size
+            accept="image/png"
+            label="PNG input"
+            @change="onFileSelected"
+          ></v-file-input>
+          <v-switch
+            v-if="!CardExist"
+            style="margin-left: 20px"
+            v-model="auto_fill"
+            inset
+            :label="`标题自动填充`"
+            @change="autoFill"
+          ></v-switch>
+        </v-card-actions>
+      </v-card>
+      <v-form v-if="!CardExist" style="margin-top: 30px">
         <v-combobox
           v-model="chips"
           :items="items"
@@ -32,11 +133,6 @@
             </v-chip>
           </template>
         </v-combobox>
-        <v-switch
-          v-model="auto_fill"
-          inset
-          :label="`卡片信息自动填充`"
-        ></v-switch>
         <v-divider></v-divider>
         <v-text-field
           label="卡片标题"
@@ -54,7 +150,51 @@
           single-line
         ></v-textarea>
       </v-form>
+      <v-checkbox
+        v-model="original"
+        label="关闭评论区"
+        color="red"
+        value="red"
+        hide-details
+      ></v-checkbox>
+      <v-checkbox
+        v-model="comment_ban"
+        label="这是原创卡片"
+        color="red"
+        value="red"
+        hide-details
+      ></v-checkbox>
+      <v-card-actions v-if="!CardExist"
+        ><v-row justify="center">
+          <v-col cols="12" sm="8" md="4">
+            <v-btn @click="submit" dark block color="#63BBFFFF" x-large>
+              提交 <v-icon right>mdi-cloud-upload</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-card-actions>
     </v-card>
+    <v-dialog v-model="dialog" max-width="290">
+      <v-card>
+        <v-card-title class="text-h5"> 卡片上传成功 </v-card-title>
+        <v-card-text> 你可以继续上传，亦或是返回主页 </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            color="green darken-1"
+            text
+            @click="(dialog = false), $router.push('/')"
+          >
+            返回主页
+          </v-btn>
+
+          <v-btn color="green darken-1" text @click="(dialog = false), clear()">
+            继续上传
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -64,11 +204,21 @@ import { mapActions, mapState } from "vuex";
 import axios from "axios";
 @Component
 export default class CardUploadView extends Vue {
-  file = "";
+  file: File = new File([], "");
   auto_fill = false;
   title = "";
+  plugin_list: string[] = [];
+  zipmod_list: Map<string, any> = new Map();
   about = "";
+  extendedListLength = 0;
   nonce = 0;
+  file_name_ex = "";
+  CardExist = false;
+  original = false;
+  comment_ban = false;
+  dialog = false;
+  UploadInfoTemp = {};
+  selectedImage: string | ArrayBuffer | null = null;
   colors = ["green", "purple", "indigo", "cyan", "teal", "orange"];
   chips: string[] = [];
   items = [
@@ -81,26 +231,127 @@ export default class CardUploadView extends Vue {
     "Running",
   ];
   MainRule = [(v: string) => !!v || "This field is required"];
-  upload() {
-    const formData = new FormData();
-    formData.append("file", this.file);
-    axios
-      .post("http://localhost:8000/api/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
+
+  mounted() {
+    this.$store
+      .dispatch("ex_me")
+      .then((res: any) => {
         console.log(res);
+      })
+      .catch((err: any) => {
+        console.log(err);
       });
+  }
+  onFileSelected() {
+    this.selectedImage = null;
+    this.CardExist = false;
+    this.file_name_ex = "";
+    if (this.file) {
+      const formData = new FormData();
+      formData.append("card", this.file);
+      this.$store
+        .dispatch("upload_png", formData)
+        .then((res: any) => {
+          console.log(res);
+          if (res.code === 0) {
+            this.UploadInfoTemp = res;
+            this.file_name_ex = "(已上传至缓存,等待数据提交)";
+            Object.keys(this.UploadInfoTemp.data.extended_list).forEach(
+              (item: any) => {
+                console.log(item);
+                this.plugin_list.push(item);
+              }
+            );
+            this.UploadInfoTemp.data.extended_list[
+              "com.bepis.sideloader.universalautoresolver"
+            ].RequiredZipmodGUIDs.forEach((item: any) => {
+              console.log(item);
+              this.zipmod_list.set(item.GUID, item);
+            });
+            //this.autoFill();
+          } else if (res.code === 56666) {
+            this.UploadInfoTemp = res;
+            this.file_name_ex = "(已在缓存找到,等待数据提交)";
+            Object.keys(this.UploadInfoTemp.data.extended_list).forEach(
+              (item: any) => {
+                console.log(item);
+                this.plugin_list.push(item);
+              }
+            );
+            this.UploadInfoTemp.data.extended_list[
+              "com.bepis.sideloader.universalautoresolver"
+            ].RequiredZipmodGUIDs.forEach((item: any) => {
+              console.log(item);
+              this.zipmod_list.set(item.GUID, item);
+            });
+            //this.autoFill();
+          } else {
+            this.CardExist = true;
+            this.UploadInfoTemp = {};
+            this.file_name_ex = "(" + res.msg + ")";
+          }
+        })
+        .catch((err: any) => {
+          console.log(err);
+        });
+    }
+    this.selectedImage = URL.createObjectURL(this.file);
+  }
+  clear() {
+    this.file = new File([], "");
+    this.auto_fill = false;
+    this.title = "";
+    this.plugin_list = [];
+    this.zipmod_list = new Map();
+    this.about = "";
+    this.extendedListLength = 0;
+    this.nonce = 0;
+    this.file_name_ex = "";
+    this.CardExist = false;
+    this.dialog = false;
+    this.UploadInfoTemp = {};
+    this.selectedImage = null;
+    this.chips = [];
+  }
+  autoFill() {
+    if (this.auto_fill && this.UploadInfoTemp) {
+      this.title =
+        this.UploadInfoTemp.data.char_info.firstname +
+        this.UploadInfoTemp.data.char_info.lastname;
+    } else {
+      this.title = "";
+    }
   }
   remove(item: string) {
     this.chips.splice(this.chips.indexOf(item), 1);
   }
+  submit() {
+    this.$store
+      .dispatch("upload_png_info", {
+        md5: this.UploadInfoTemp.data.path,
+        cardtage: this.chips,
+        commentban: this.comment_ban,
+        title: this.title,
+        note: this.about,
+      })
+      .then((res: any) => {
+        if (res.code === 0) {
+          this.dialog = true;
+        } else {
+          this.dialog = true;
+        }
+        console.log(res);
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  }
 }
 </script>
-
 <style scoped>
+.image_card {
+  padding: 5px 5px 5px 5px;
+}
 .upload_box {
   display: flex;
   justify-content: center;

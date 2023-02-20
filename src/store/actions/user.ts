@@ -35,7 +35,19 @@ export default {
       return res;
     });
   },
-
+  async ex_me({ commit }: any) {
+    return request.get("/user/me").then((res: any) => {
+      console.log("ex_me.res", res);
+      if (res.code === 0) {
+        commit("setUserData", res.data);
+        commit("setIsLogin", true);
+      } else {
+        commit("setUserData", {});
+        commit("setIsLogin", false);
+      }
+      return res;
+    });
+  },
   async ex_register({ commit }: any, form: any) {
     console.log(form);
     // code to log in the user

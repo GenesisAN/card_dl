@@ -3,6 +3,7 @@ import "es6-promise/auto";
 import Vuex from "vuex";
 import VuexPersistence from "vuex-persist";
 import userActions, { UserData } from "./actions/user";
+import cardActions from "./actions/card";
 Vue.use(Vuex);
 
 const vuexLocal = new VuexPersistence({
@@ -28,6 +29,7 @@ export default new Vuex.Store({
   },
   actions: {
     ...userActions,
+    ...cardActions,
   },
   plugins: [vuexLocal.plugin],
 });

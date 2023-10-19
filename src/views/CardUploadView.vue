@@ -116,6 +116,8 @@
           label="卡片Tag设置(用于搜索)"
           multiple
           prepend-icon="mdi-tag-plus-outline"
+          :search-input.sync="search"
+          :loading="loading"
           solo
         >
           <template v-slot:selection="{ attrs, item, select, selected }">
@@ -161,7 +163,6 @@
         v-model="comment_ban"
         label="这是原创卡片"
         color="red"
-        value="red"
         hide-details
       ></v-checkbox>
       <v-card-actions v-if="!CardExist"
@@ -199,7 +200,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import { mapActions, mapState } from "vuex";
 import axios from "axios";
 @Component
@@ -215,21 +216,17 @@ export default class CardUploadView extends Vue {
   file_name_ex = "";
   CardExist = false;
   original = false;
+  select = null;
+  loading = false;
+  search = null;
   comment_ban = false;
   dialog = false;
   UploadInfoTemp = {};
   selectedImage: string | ArrayBuffer | null = null;
   colors = ["green", "purple", "indigo", "cyan", "teal", "orange"];
   chips: string[] = [];
-  items = [
-    "Streaming",
-    "Eating",
-    "Sleeping",
-    "Designing",
-    "Coding",
-    "Cycling",
-    "Running",
-  ];
+  items = [];
+  tags: Map<string, any> = new Map();
   MainRule = [(v: string) => !!v || "This field is required"];
 
   mounted() {
@@ -326,10 +323,16 @@ export default class CardUploadView extends Vue {
     this.chips.splice(this.chips.indexOf(item), 1);
   }
   submit() {
+    //遍历chips从tags中获取对应的tag_id并组成数组发
+    //创建int 数组
+    let tagsint: any[] = [];
+    this.chips.forEach((item) => {
+      tagsint.push(this.tags.get(item).tid);
+    });
     this.$store
       .dispatch("upload_png_info", {
         md5: this.UploadInfoTemp.data.path,
-        cardtage: this.chips,
+        cardtage: tagsint,
         commentban: this.comment_ban,
         title: this.title,
         note: this.about,
@@ -338,12 +341,43 @@ export default class CardUploadView extends Vue {
         if (res.code === 0) {
           this.dialog = true;
         } else {
-          this.dialog = true;
+          this.dialog = false;
         }
         console.log(res);
       })
       .catch((err: any) => {
         console.log(err);
+      });
+  }
+  @Watch("search")
+  onSearchChange(newVal: string, oldVal: string) {
+    newVal && newVal !== this.select && this.querySelections(newVal);
+  }
+
+  querySelections(v: string) {
+    this.loading = true;
+
+    const options = {
+      method: "GET",
+      url: "http://127.0.0.1:3000/api/v1/tags/search",
+      params: { q: v },
+    };
+
+    axios
+      .request(options)
+      .then((response) => {
+        if (response.data.code === 0 && Array.isArray(response.data.data)) {
+          // Extract the 'tt' values from each object in the data array
+          this.items = response.data.data.map((item) => {
+            this.tags.set(item.tt, item);
+            return item.tt;
+          });
+        }
+        this.loading = false;
+      })
+      .catch((error) => {
+        console.error(error);
+        this.loading = false; // Ensure loading is set to false even on error
       });
   }
 }

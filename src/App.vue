@@ -14,7 +14,9 @@
         <span class="mr-2">{{ $t("support") }}</span>
         <v-icon>mdi-professional-hexagon</v-icon>
       </v-btn>
-
+      <v-btn @click="wiki" target="_blank" text>
+        <span>{{ $t("wiki") }}</span>
+      </v-btn>
       <v-btn @click="about" target="_blank" text>
         <span>{{ $t("about") }}</span>
       </v-btn>

@@ -6,13 +6,14 @@
         :key="card.MD5"
         class="flex-column"
         width="176px"
+        height="325px"
       >
         <div
           class="card-thumb-wrapper relative"
           @mouseover="hover = index"
           @mouseleave="hover = -1"
         >
-          <v-img :src="card.Thumb" min-height="126px" min-width="176px">
+          <v-img :src="card.Thumb" min-height="125px" min-width="176px">
             <v-card-title
               v-if="index === hover"
               class="card-toolbar absolute pd-h3 flex-row-between w-100"
@@ -25,17 +26,27 @@
             color="#000000FF"
             z-index="0"
           >
-            <v-avatar color="brown" size="48">
-              <img v-if="card.uploaderAvatar" :src="card.uploaderAvatar" />
-              <span v-else class="white--text text-h5">{{
-                card.AvatarName
-              }}</span>
-            </v-avatar>
-            <p color="#white">{{ card.uploader }}</p>
-            <v-btn @click="download(card)">Donwload</v-btn>
+            <div>
+              <v-btn @click="download(card)">Donwload</v-btn>
+              <v-btn @click="download(card)">Like</v-btn>
+              <v-btn @click="download(card)">Bookmark</v-btn>
+            </div>
           </v-overlay>
         </div>
-        <v-card-title>{{ card.Title }}</v-card-title>
+        <v-card-title class="card-title">{{
+          truncateString(card.Title, 8)
+        }}</v-card-title>
+        <v-card-subtitle>
+          <v-avatar color="brown" size="30">
+            <img v-if="card.uploaderAvatar" :src="card.uploaderAvatar" />
+            <span v-else class="white--text text-h5">{{
+              card.AvatarName
+            }}</span>
+          </v-avatar>
+          <a color="#white" class="a-uploader">{{
+            card.uploader
+          }}</a></v-card-subtitle
+        >
       </v-card>
     </div>
     <infinite-loading @infinite="infiniteHandler"></infinite-loading>
@@ -45,6 +56,13 @@
 #gallery {
   display: flex;
   flex-wrap: wrap;
+}
+.card-title {
+  margin: -10px 0 0 0;
+  font-size: 16px;
+}
+.a-uploader {
+  margin-left: 10px;
 }
 .card-thumb-wrapper {
   width: 30%;
@@ -107,6 +125,12 @@ export default Vue.extend({
     download(item) {
       console.log(item);
       window.open(item.Path);
+    },
+    truncateString(str, num) {
+      if (str.length <= num) {
+        return str;
+      }
+      return str.slice(0, num) + "...";
     },
   },
 });

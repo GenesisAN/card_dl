@@ -3,13 +3,18 @@
 ## Project setup
 ```
 npm install
+yarn install
 ```
 
 ### Compiles and hot-reloads for development
 ```
 npm run serve
-```
 
+```
+### Compiles and hot-reloads for development
+```
+yarn serve
+```
 ### Compiles and minifies for production
 ```
 npm run build

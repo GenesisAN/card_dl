@@ -53,4 +53,18 @@ export default {
     // code to log in the user
     return request.post("/user/register", form);
   },
+
+  //修改密码
+  async ex_changepassword({ commit }: any, form: any) {
+    console.log(form);
+    // code to log in the user
+    return request.post("/user/changepassword/" + form.token, form);
+  },
+
+  //忘记密码
+  async ex_forget({ commit }: any, form: any) {
+    console.log(form);
+    // code to log in the user
+    return request.post("/user/forgetpassword", form);
+  },
 };

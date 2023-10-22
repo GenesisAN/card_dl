@@ -4,7 +4,8 @@ import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import ChangePasswordView from "../views/ChangePasswordView.vue";
-import CardUploadView from "@/views/CardUploadView.vue";
+import CardUploadView from "../views/CardUploadView.vue";
+import ForgetPasswordView from "../views/ForgetPasswordView.vue";
 Vue.use(VueRouter);
 const routes: Array<RouteConfig> = [
   {
@@ -21,6 +22,11 @@ const routes: Array<RouteConfig> = [
     path: "/register",
     name: "register",
     component: RegisterView,
+  },
+  {
+    path: "/forget",
+    name: "forget",
+    component: ForgetPasswordView,
   },
   {
     path: "/change-password/:token",

@@ -1,33 +1,66 @@
 <template>
   <v-app>
     <v-app-bar app>
-      <div class="mx-14">
-        <h1 class="display-1 font-weight-bold">CardDL</h1>
-      </div>
-      <v-btn @click="$router.push('/')" target="_blank" text>
+      <v-toolbar-title class="mx-2">
+        <h1 class="display-1 font-weight-bold" @click="$router.push('/')">
+          CardDL
+        </h1>
+      </v-toolbar-title>
+
+      <v-btn v-if="!isSmallScreen" @click="$router.push('/')" text>
         <span>{{ $t("gallery") }}</span>
       </v-btn>
-      <v-btn @click="$router.push('/card_upload')" target="_blank" text>
+      <v-btn v-if="!isSmallScreen" @click="$router.push('/card_upload')" text>
         <span>{{ $t("upload") }}</span>
       </v-btn>
-      <v-btn target="_blank" text>
+      <v-btn v-if="!isSmallScreen" text>
         <span class="mr-2">{{ $t("support") }}</span>
         <v-icon>mdi-professional-hexagon</v-icon>
       </v-btn>
-      <v-btn @click="wiki" target="_blank" text>
+      <v-btn v-if="!isSmallScreen" @click="wiki" text>
         <span>{{ $t("wiki") }}</span>
       </v-btn>
-      <v-btn @click="about" target="_blank" text>
+      <v-btn v-if="!isSmallScreen" @click="about" text>
         <span>{{ $t("about") }}</span>
       </v-btn>
+      <v-menu v-if="isSmallScreen">
+        <!-- Trigger button -->
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on">
+            <v-icon>mdi-menu</v-icon>
+          </v-btn>
+        </template>
+        <!-- Menu content -->
+        <v-list>
+          <v-list-item-group>
+            <v-list-item @click="$router.push('/')">
+              <v-list-item-title>{{ $t("gallery") }}</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="$router.push('/card_upload')">
+              <v-list-item-title>{{ $t("upload") }}</v-list-item-title>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title>{{ $t("support") }}</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="wiki">
+              <v-list-item-title>{{ $t("wiki") }}</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="about">
+              <v-list-item-title>{{ $t("about") }}</v-list-item-title>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-menu>
       <v-spacer></v-spacer>
-      <div class="user-container" style="margin-right: 20px">
-        <User />
+
+      <div class="user-container">
+        <User :is-small-screen="isSmallScreen" />
       </div>
+
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on">
-            <v-icon> mdi-cog </v-icon>
+            <v-icon>mdi-cog</v-icon>
           </v-btn>
         </template>
         <v-card>
@@ -38,7 +71,7 @@
             <v-container fluid>
               <v-row align="center">
                 <v-col cols="6">
-                  <v-subheader>{{ $t("language") }} </v-subheader>
+                  <v-subheader>{{ $t("language") }}</v-subheader>
                 </v-col>
                 <v-col cols="6">
                   <v-select
@@ -52,7 +85,6 @@
             </v-container>
           </v-col>
           <v-divider></v-divider>
-
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="primary" text @click="chang_lange">{{
@@ -61,6 +93,8 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <!-- For small screens: collapse all buttons into a menu -->
     </v-app-bar>
 
     <v-main>
@@ -72,16 +106,16 @@
 <script lang="ts">
 import Vue from "vue";
 import User from "./components/User.vue";
+
 export default Vue.extend({
   name: "App",
   components: { User },
-
   data: () => ({
     dialog: false,
     set_lange: "English",
     states: ["简体中文", "English"],
     tags: [""],
-    //
+    isSmallScreen: false, // New data for checking screen size
   }),
   methods: {
     about() {
@@ -97,12 +131,21 @@ export default Vue.extend({
           this.$i18n.locale = "cn";
       }
     },
+    checkScreenSize() {
+      this.isSmallScreen = window.innerWidth <= 730;
+    },
   },
   mounted() {
+    this.checkScreenSize();
+    window.addEventListener("resize", this.checkScreenSize);
+
     if (localStorage.set_lange) {
       this.set_lange = localStorage.set_lange;
       this.chang_lange();
     }
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.checkScreenSize);
   },
   watch: {
     set_lange(newName) {
@@ -111,3 +154,16 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style scoped>
+.v-btn > .v-icon + span {
+  margin-left: 8px;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+  .v-toolbar-title h1 {
+    font-size: 1.5rem;
+  }
+}
+</style>

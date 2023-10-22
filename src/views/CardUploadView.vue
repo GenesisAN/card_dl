@@ -153,6 +153,7 @@
         ></v-textarea>
       </v-form>
       <v-checkbox
+        v-if="!CardExist"
         v-model="original"
         label="关闭评论区"
         color="red"
@@ -160,6 +161,7 @@
         hide-details
       ></v-checkbox>
       <v-checkbox
+        v-if="!CardExist"
         v-model="comment_ban"
         label="这是原创卡片"
         color="red"
@@ -239,6 +241,8 @@ export default class CardUploadView extends Vue {
         console.log(err);
       });
   }
+
+  // 文件选择后执行的操作
   onFileSelected() {
     this.selectedImage = null;
     this.CardExist = false;
@@ -265,7 +269,7 @@ export default class CardUploadView extends Vue {
               console.log(item);
               this.zipmod_list.set(item.GUID, item);
             });
-            //this.autoFill();
+            this.autoFill();
           } else if (res.code === 56666) {
             this.UploadInfoTemp = res;
             this.file_name_ex = "(已在缓存找到,等待数据提交)";
@@ -281,7 +285,10 @@ export default class CardUploadView extends Vue {
               console.log(item);
               this.zipmod_list.set(item.GUID, item);
             });
-            //this.autoFill();
+            this.autoFill();
+          } else if (res.code === 401) {
+            //未登录
+            this.$router.push("/login");
           } else {
             this.CardExist = true;
             this.UploadInfoTemp = {};
@@ -382,19 +389,41 @@ export default class CardUploadView extends Vue {
   }
 }
 </script>
+
 <style scoped>
 .image_card {
-  padding: 5px 5px 5px 5px;
+  padding: 5px;
 }
+
 .upload_box {
   display: flex;
   justify-content: center;
   height: 100%;
 }
+
 .elevation-12 {
-  width: 900px;
+  max-width: 900px;
   padding-top: 20px;
   padding-right: 40px;
   padding-left: 40px;
+  width: 100%; /* Take up full width on smaller screens */
+}
+
+@media (max-width: 600px) {
+  /* Styles for smaller screens (like phones) */
+  .elevation-12 {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .image_card img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  v-btn[x-large] {
+    font-size: 1rem; /* Adjust button text size */
+    padding: 12px 20px; /* Increase button size */
+  }
 }
 </style>

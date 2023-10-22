@@ -27,6 +27,9 @@
             required
           ></v-text-field>
           <div style="text-align: right">
+            <a @click="$router.push('/register')">{{ $t("register") }}</a>
+          </div>
+          <div style="text-align: right">
             <a @click="$router.push('/')">{{ $t("forgot_password") }}</a>
           </div>
           <template v-if="passwordError">
@@ -79,6 +82,8 @@ export default class LoginView extends Vue {
       .then((res: any) => {
         if (res.code === 0) {
           this.$router.push("/");
+        } else if (res.code === 40001) {
+          this.passwordError = this.$t("password_error").toString();
         } else {
           this.passwordError = res.data.msg;
         }

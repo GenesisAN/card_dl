@@ -363,13 +363,11 @@ export default class CardUploadView extends Vue {
 
   querySelections(v: string) {
     this.loading = true;
-
     const options = {
       method: "GET",
       url: "http://127.0.0.1:3000/api/v1/tags/search",
       params: { q: v },
     };
-
     axios
       .request(options)
       .then((response) => {

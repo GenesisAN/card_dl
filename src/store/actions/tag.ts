@@ -1,5 +1,4 @@
 import request from "../../uitls/request";
-
 export default {
   // Png文件上传
   async upload_png({ commit }: any, form: any) {
@@ -18,6 +17,12 @@ export default {
       headers: {
         "Content-Type": "application/json",
       },
+    });
+  },
+  async ex_search_tags({ commit }: any, form: any) {
+    console.log(form);
+    return request.get("/tag/search?", form).then((res: any) => {
+      return res;
     });
   },
 };

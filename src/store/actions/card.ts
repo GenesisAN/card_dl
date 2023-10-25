@@ -1,5 +1,4 @@
-import request from "../../uitls/request";
-
+import request, { baseURL } from "../../uitls/request";
 export default {
   // Png文件上传
   async upload_png({ commit }: any, form: any) {
@@ -18,6 +17,15 @@ export default {
       headers: {
         "Content-Type": "application/json",
       },
+    });
+  },
+  async serach_card({ commit }: any, form: any) {
+    console.log(form);
+    // code to log in the user
+    // Q:get如何组装参数?
+    return request.get("/card/search?", form).then((res: any) => {
+      res.baseURL = baseURL;
+      return res;
     });
   },
 };

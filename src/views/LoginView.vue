@@ -30,7 +30,7 @@
             <a @click="$router.push('/register')">{{ $t("register") }}</a>
           </div>
           <div style="text-align: right">
-            <a @click="$router.push('/')">{{ $t("forgot_password") }}</a>
+            <a @click="$router.push('/forget')">{{ $t("forgot_password") }}</a>
           </div>
           <template v-if="passwordError">
             <p class="text-danger text-center">{{ passwordError }}</p>

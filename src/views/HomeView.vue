@@ -82,9 +82,11 @@
 <script>
 import Vue from "vue";
 import InfiniteLoading from "vue-infinite-loading";
+
 const api = "//127.0.0.1:3000/api/v1/card/search?";
 import axios from "axios";
 // import HelloWorld from "../components/HelloWorld.vue";
+
 export default Vue.extend({
   components: {
     InfiniteLoading,
@@ -99,18 +101,20 @@ export default Vue.extend({
   }),
   methods: {
     infiniteHandler($state) {
-      axios
-        .get(api, {
+      this.$store
+        .dispatch("serach_card", {
           params: {
             p: this.page,
           },
         })
         .then((res) => {
-          if (res.data.data?.length > 0) {
+          if (res.data?.length > 0) {
             this.page += 1;
-            res.data.data.forEach((item) => {
-              item.Thumb = `//127.0.0.1:3000/api/v1/card/thumd/${item.CardType}/${item.MD5}.jpg`;
-              item.Path = `//127.0.0.1:3000/api/v1/card/image/${item.CardType}/${item.MD5}.png`;
+            res.data.forEach((item) => {
+              item.Thumb =
+                res.baseURL + `/card/thumd/${item.CardType}/${item.MD5}.jpg`;
+              item.Path =
+                res.baseURL + `/card/image/${item.CardType}/${item.MD5}.png`;
               item.uploader = item?.UploadUserInfo?.nickname ?? "匿名";
               item.uploaderAvatar = item?.UploadUserInfo?.avatar ?? "";
               item.AvatarName = item.uploader.slice(0, 1).toUpperCase();

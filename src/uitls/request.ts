@@ -6,7 +6,7 @@ const http = VUE_APP_URL_HTTPS === "true" ? "https" : "http";
 console.log(
   NODE_ENV.indexOf("production") === -1 ? "/web/" : `${http}://${VUE_APP_URL}`
 );
-// 创建axios实例，在这里可以设置请求的默认配置
+export const baseURL = `${http}://${VUE_APP_URL}`;
 const request = axios.create({
   withCredentials: true,
   timeout: 60000, // 设置超时时间10s

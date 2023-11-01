@@ -205,6 +205,51 @@
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { mapActions, mapState } from "vuex";
 import axios from "axios";
+
+interface PluginData {
+  Version: number;
+  Data: any; // 你可能需要根据实际数据结构进一步指定这里的类型
+}
+
+interface ResolveInfo {
+  GUID: string;
+  Slot: number;
+  LocalSlot: number;
+  Property: string;
+  CategoryNo: number;
+}
+
+interface PluginDataEx {
+  Version: number;
+  Name: string;
+  RequiredPluginGUIDs: string[];
+  RequiredZipmodGUIDs: ResolveInfo[];
+}
+
+interface ChaFileParameterEx {
+  version: string;
+  lastname: string;
+  firstname: string;
+  nickname: string;
+  sex: number;
+}
+
+interface Card {
+  extended_list: { [key: string]: PluginDataEx };
+  char_info: ChaFileParameterEx;
+  card_type: string;
+  load_version: string;
+  path: string;
+  // 这里我省略了Extended、Image1和Image2，因为在你的JSON标记中，它们被设置为"-"，表示不会序列化。如果你在TS中需要它们，可以添加回来。
+}
+
+interface Response<T> {
+  Code: number;
+  Msg: string;
+  Data: T;
+}
+
+type UploadInfoTemp = Response<Card>;
 @Component
 export default class CardUploadView extends Vue {
   file: File = new File([], "");
@@ -223,7 +268,23 @@ export default class CardUploadView extends Vue {
   search = null;
   comment_ban = false;
   dialog = false;
-  UploadInfoTemp = {};
+  UploadInfoTemp: UploadInfoTemp = {
+    Code: 0,
+    Msg: "",
+    Data: {
+      extended_list: {},
+      char_info: {
+        version: "",
+        lastname: "",
+        firstname: "",
+        nickname: "",
+        sex: 0,
+      },
+      card_type: "",
+      load_version: "",
+      path: "",
+    },
+  };
   selectedImage: string | ArrayBuffer | null = null;
   colors = ["green", "purple", "indigo", "cyan", "teal", "orange"];
   chips: string[] = [];
@@ -291,7 +352,7 @@ export default class CardUploadView extends Vue {
             this.$router.push("/login");
           } else {
             this.CardExist = true;
-            this.UploadInfoTemp = {};
+            this.UploadInfoTemp = res;
             this.file_name_ex = "(" + res.msg + ")";
           }
         })

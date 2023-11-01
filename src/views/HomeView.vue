@@ -83,9 +83,7 @@
 import Vue from "vue";
 import InfiniteLoading from "vue-infinite-loading";
 
-const api = "//127.0.0.1:3000/api/v1/card/search?";
 import axios from "axios";
-// import HelloWorld from "../components/HelloWorld.vue";
 
 export default Vue.extend({
   components: {
@@ -111,6 +109,7 @@ export default Vue.extend({
           if (res.data?.length > 0) {
             this.page += 1;
             res.data.forEach((item) => {
+              // 计算3级哈希目录
               item.Thumb =
                 res.baseURL + `/card/thumd/${item.CardType}/${item.MD5}.jpg`;
               item.Path =
@@ -129,6 +128,14 @@ export default Vue.extend({
     download(item) {
       console.log(item);
       window.open(item.Path);
+    },
+    hashDirs(md5) {
+      // 我们假设MD5长度为32，并取其前6个字符进行分割
+      let part1 = md5.slice(0, 2);
+      let part2 = md5.slice(2, 4);
+      let part3 = md5.slice(4, 6);
+
+      return `${part1}/${part2}/${part3}/${md5}`;
     },
     truncateString(str, num) {
       if (str.length <= num) {

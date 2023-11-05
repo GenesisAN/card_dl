@@ -2,6 +2,8 @@
   "message": "hello i18n !!",
   "gallery": "Gallery",
   "upload": "Upload",
+  "wiki": "Wiki",
+  "mode": "Mode",
   "support": "Support",
   "about": "About",
   "user_login": "User Login",
@@ -40,5 +42,7 @@
   "edit_account": "Edit Account",
   "logout": "Logout",
   "setting": "Setting",
-  "wiki": "Wiki"
+  "download": "Download",
+  "like": "Like",
+  "bookmark": "Bookmark"
 }

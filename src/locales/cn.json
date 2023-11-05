@@ -2,6 +2,8 @@
   "message": "你好 i18n !!",
   "gallery": "画廊",
   "upload": "上传",
+  "wiki": "百科",
+  "mode": "模组",
   "support": "支持",
   "about": "关于",
   "user_login": "用户登录",
@@ -40,5 +42,7 @@
   "edit_account": "编辑账户",
   "logout": "退出登录",
   "setting": "设置",
-  "wiki": "百科"
+  "download": "下载",
+  "like": "喜欢",
+  "bookmark": "收藏"
 }

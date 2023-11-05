@@ -7,20 +7,23 @@
         </h1>
       </v-toolbar-title>
 
-      <v-btn v-if="!isSmallScreen" @click="$router.push('/')" text>
+      <v-btn v-if="!isSmallScreen" text @click="$router.push('/')">
         <span>{{ $t("gallery") }}</span>
       </v-btn>
-      <v-btn v-if="!isSmallScreen" @click="$router.push('/card_upload')" text>
+      <v-btn v-if="!isSmallScreen" text @click="$router.push('/card_upload')">
         <span>{{ $t("upload") }}</span>
+      </v-btn>
+      <v-btn v-if="!isSmallScreen" text @click="$router.push('/mode')">
+        <span>{{ $t("mode") }}</span>
       </v-btn>
       <v-btn v-if="!isSmallScreen" text>
         <span class="mr-2">{{ $t("support") }}</span>
         <v-icon>mdi-professional-hexagon</v-icon>
       </v-btn>
-      <v-btn v-if="!isSmallScreen" @click="wiki" text>
+      <v-btn v-if="!isSmallScreen" text @click="wiki">
         <span>{{ $t("wiki") }}</span>
       </v-btn>
-      <v-btn v-if="!isSmallScreen" @click="about" text>
+      <v-btn v-if="!isSmallScreen" text @click="about">
         <span>{{ $t("about") }}</span>
       </v-btn>
       <v-menu v-if="isSmallScreen">
@@ -38,6 +41,9 @@
             </v-list-item>
             <v-list-item @click="$router.push('/card_upload')">
               <v-list-item-title>{{ $t("upload") }}</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="$router.push('/mode')">
+              <v-list-item-title>{{ $t("mode") }}</v-list-item-title>
             </v-list-item>
             <v-list-item>
               <v-list-item-title>{{ $t("support") }}</v-list-item-title>
@@ -87,9 +93,9 @@
           <v-divider></v-divider>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="chang_lange">{{
-              $t("setting")
-            }}</v-btn>
+            <v-btn color="primary" text @click="chang_lange"
+              >{{ $t("setting") }}
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>

@@ -1,3 +1,11 @@
+<script>
+import CommentCard from "@/components/CommentCard.vue";
+import UserAvatar from "@/components/UserAvatar.vue";
+export default {
+  name: "CardView",
+  components: { UserAvatar, CommentCard },
+};
+</script>
 <template>
   <div>
     <!-- Product header will now use flexbox to align items -->
@@ -26,12 +34,20 @@
           </div>
         </v-carousel-item>
       </v-carousel>
+
       <!-- Author info container with flex: 1 -->
       <h1 class="product-title">Card Title</h1>
+      <UserAvatar
+        class="align-center"
+        :user-name="'AN'"
+        :user-handle="'user123'"
+        :avatar-url="'https://picsum.photos/32/32'"
+      ></UserAvatar>
       <p class="product-description">
         Short description of the card, its features, and any important
         information a player might want to know.
       </p>
+
       <div class="text-center">
         <v-chip
           class="ma-2"
@@ -98,19 +114,23 @@
       </div>
     </div>
     <div class="product-page">
-      <div class="product-details">
-        <h2>Details</h2>
-        <p>Here you can add more detailed information about the card.</p>
-      </div>
+      <!--      <div class="product-details">-->
+      <!--        <h2>Details</h2>-->
+      <!--        <p>Here you can add more detailed information about the card.</p>-->
+      <!--      </div>-->
       <div class="user-reviews">
         <h2>User Reviews</h2>
         <!-- Assuming there are multiple reviews, so this would be repeated for each one. -->
         <div class="review">
-          <h3>Another Username</h3>
-          <p>
-            This is another review by a user. It contains their opinion on the
-            card.
-          </p>
+          <CommentCard
+            :avatar-name="'GenesisAN'"
+            :user-name="'AN'"
+            :uploader-avatar="'https://picsum.photos/32/32'"
+            :user-handle="'@user123'"
+            :date="'2021-01-01'"
+            :comment="'Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well.'"
+          >
+          </CommentCard>
         </div>
         <!-- Repeat the above div for each review -->
       </div>
@@ -118,17 +138,13 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "CardView",
-};
-</script>
-
 <style scoped>
 .product-header >>> ul.slick-dots {
   padding-left: 0px;
 }
-
+.review > * {
+  margin: 10px;
+}
 .v-carousel .v-carousel-item {
   display: flex;
   justify-content: center;
@@ -170,7 +186,6 @@ export default {
 
 .buy-button {
   background-color: #5c7e10;
-  color: white;
   border: none;
   padding: 10px 20px;
   margin-right: 10px;
@@ -195,7 +210,6 @@ export default {
 }
 
 .review {
-  background-color: #f1f1f1;
   padding: 10px;
   border-radius: 4px;
   margin-bottom: 10px;

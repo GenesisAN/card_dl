@@ -1,9 +1,9 @@
 <template>
   <div class="upload_box">
     <v-card class="elevation-12">
-      <v-toolbar color="primary" dark>
+      <v-toolbar :class="{ primary: !dark }">
         <v-icon>mdi-account</v-icon>
-        <v-toolbar-title>Card Upload</v-toolbar-title>
+        <v-toolbar-title> Card Uploads </v-toolbar-title>
       </v-toolbar>
       <v-card class="image_card">
         <v-card-title v-if="selectedImage">
@@ -398,7 +398,9 @@ export default class CardUploadView extends Vue {
   remove(item: string) {
     this.chips.splice(this.chips.indexOf(item), 1);
   }
-
+  get dark() {
+    return this.$vuetify.theme.dark;
+  }
   submit() {
     //遍历chips从tags中获取对应的tag_id并组成数组发
     //创建int 数组

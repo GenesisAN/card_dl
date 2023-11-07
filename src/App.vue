@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app :dark="$vuetify.theme.dark">
     <v-app-bar app>
       <v-toolbar-title class="mx-2">
         <h1 class="display-1 font-weight-bold" @click="$router.push('/')">
@@ -20,13 +20,13 @@
         <span class="mr-2">{{ $t("support") }}</span>
         <v-icon>mdi-professional-hexagon</v-icon>
       </v-btn>
-      <v-btn v-if="!isSmallScreen" text @click="wiki">
+      <v-btn v-if="!isSmallScreen" text>
         <span>{{ $t("wiki") }}</span>
       </v-btn>
       <v-btn v-if="!isSmallScreen" text @click="about">
         <span>{{ $t("about") }}</span>
       </v-btn>
-      <v-menu v-if="isSmallScreen">
+      <v-menu v-if="isSmallScreen" transition="slide-y-transition">
         <!-- Trigger button -->
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
@@ -48,7 +48,7 @@
             <v-list-item>
               <v-list-item-title>{{ $t("support") }}</v-list-item-title>
             </v-list-item>
-            <v-list-item @click="wiki">
+            <v-list-item>
               <v-list-item-title>{{ $t("wiki") }}</v-list-item-title>
             </v-list-item>
             <v-list-item @click="about">
@@ -70,7 +70,10 @@
           </v-btn>
         </template>
         <v-card>
-          <v-card-title class="text-h5 grey lighten-2">
+          <v-card-title
+            :class="{ primary: !dark, secondary: dark }"
+            class="text-h5 lighten-2"
+          >
             {{ $t("settings") }}
           </v-card-title>
           <v-col>
@@ -86,6 +89,14 @@
                     :label="$t('select_language')"
                     menu-props="auto"
                   ></v-select>
+                </v-col>
+              </v-row>
+              <v-row align="center">
+                <v-col cols="6">
+                  <v-subheader>夜间模式</v-subheader>
+                </v-col>
+                <v-col cols="6">
+                  <v-switch v-model="$vuetify.theme.dark"></v-switch>
                 </v-col>
               </v-row>
             </v-container>
@@ -123,6 +134,11 @@ export default Vue.extend({
     tags: [""],
     isSmallScreen: false, // New data for checking screen size
   }),
+  computed: {
+    dark() {
+      return this.$vuetify.theme.dark;
+    },
+  },
   methods: {
     about() {
       this.$router.push("/about");

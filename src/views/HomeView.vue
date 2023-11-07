@@ -135,7 +135,6 @@
 
 .uploader-link {
   margin-left: 10px;
-  color: black;
 }
 
 .card-thumb-wrapper {

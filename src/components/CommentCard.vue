@@ -9,24 +9,29 @@
     <v-card-actions class="comment-actions comment-text">
       <v-row class="w-100 d-flex align-center justify-space-between no-gutters">
         <!-- User Avatar and Info -->
-        <v-col class="d-flex align-center">
-          <v-avatar class="mr-3 comment-avatar">
-            <img v-if="uploaderAvatar" :src="uploaderAvatar" />
-            <span v-else class="black--text text-h5">{{ avatarName }}</span>
-          </v-avatar>
-          <v-list-item-content>
-            <v-list-item-title>{{ userName }}</v-list-item-title>
-            <v-list-item-subtitle class="grey--text text--lighten-1">
-              {{ userHandle }}
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-col>
-
+        <!--        <v-col class="d-flex align-center">-->
+        <!--          <v-avatar class="mr-3 comment-avatar">-->
+        <!--            <img v-if="uploaderAvatar" :src="uploaderAvatar" />-->
+        <!--            <span v-else class="black&#45;&#45;text text-h5">{{ avatarName }}</span>-->
+        <!--          </v-avatar>-->
+        <!--          <v-list-item-content>-->
+        <!--            <v-list-item-title>{{ userName }}</v-list-item-title>-->
+        <!--            <v-list-item-subtitle class="grey&#45;&#45;text text&#45;&#45;lighten-1">-->
+        <!--              {{ userHandle }}-->
+        <!--            </v-list-item-subtitle>-->
+        <!--          </v-list-item-content>-->
+        <!--        </v-col>-->
+        <UserAvatar
+          :avatar-url="uploaderAvatar"
+          :user-handle="userHandle"
+          :user-name="userName"
+          class="align-center"
+        ></UserAvatar>
         <!-- Spacer to push content to edges -->
         <v-spacer></v-spacer>
 
         <!-- Date and Menu -->
-        <v-col cols="auto" class="d-flex align-center justify-end">
+        <v-col class="d-flex align-center justify-end" cols="auto">
           <v-list-item-subtitle class="grey--text mr-4">
             {{ date }}
           </v-list-item-subtitle>
@@ -34,9 +39,9 @@
           <!-- Menu Button -->
           <v-menu offset-y transition="slide-y-transition">
             <template v-slot:activator="{ on, attrs }">
-              <v-icon v-bind="attrs" v-on="on" class="icon-dots"
-                >mdi-dots-vertical</v-icon
-              >
+              <v-icon class="icon-dots" v-bind="attrs" v-on="on"
+                >mdi-dots-vertical
+              </v-icon>
             </template>
             <v-list>
               <v-list-item @click="reportPost">
@@ -51,8 +56,11 @@
 </template>
 
 <script>
+import UserAvatar from "@/components/UserAvatar.vue";
+
 export default {
   name: "CommentCard",
+  components: { UserAvatar },
   props: {
     avatarName: String,
     uploaderAvatar: String,

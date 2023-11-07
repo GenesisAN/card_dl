@@ -1,13 +1,93 @@
 <script>
 import CommentCard from "@/components/CommentCard.vue";
 import UserAvatar from "@/components/UserAvatar.vue";
+import props from "vuetify/src/components/VCalendar/util/props";
+
 export default {
   name: "CardView",
+  computed: {
+    props() {
+      return props;
+    },
+  },
   components: { UserAvatar, CommentCard },
+  data: () => ({
+    dialog: false,
+  }),
 };
 </script>
 <template>
   <div>
+    <v-dialog v-model="dialog" persistent width="500">
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          bottom
+          color="blue"
+          dark
+          fab
+          fixed
+          right
+          v-bind="attrs"
+          x-large
+          v-on="on"
+        >
+          <!-- 这里放置按钮图标或文本 -->
+          <v-icon>mdi-message</v-icon>
+        </v-btn>
+      </template>
+      <v-card>
+        <v-card-title class="text-h5 lighten-2">
+          {{ $t("settings") }}
+        </v-card-title>
+        <v-col>
+          <v-container fluid>
+            <v-row align="center">
+              <v-col cols="6">
+                <v-subheader>{{ $t("language") }}</v-subheader>
+              </v-col>
+              <v-col cols="6">
+                <v-select
+                  v-model="set_lange"
+                  :items="states"
+                  :label="$t('select_language')"
+                  menu-props="auto"
+                ></v-select>
+              </v-col>
+            </v-row>
+            <v-row align="center">
+              <v-col cols="6">
+                <v-subheader>夜间模式</v-subheader>
+              </v-col>
+              <v-col cols="6">
+                <v-switch v-model="$vuetify.theme.dark"></v-switch>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-col>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="dialog = false"
+            >{{ $t("setting") }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-btn
+      bottom
+      color="pink"
+      dark
+      fab
+      fixed
+      right
+      style="margin-bottom: 85px"
+      x-large
+      @click="onClickFab"
+    >
+      <!-- 这里放置按钮图标或文本 -->
+      <v-icon>mdi-download</v-icon>
+    </v-btn>
+
     <!-- Product header will now use flexbox to align items -->
     <div class="product-header">
       <!-- Carousel container with flex: 2 to take twice as much space as author info -->
@@ -34,14 +114,14 @@ export default {
           </div>
         </v-carousel-item>
       </v-carousel>
-
       <!-- Author info container with flex: 1 -->
       <h1 class="product-title">Card Title</h1>
+
       <UserAvatar
-        class="align-center"
-        :user-name="'AN'"
-        :user-handle="'user123'"
         :avatar-url="'https://picsum.photos/32/32'"
+        :user-handle="'user123'"
+        :user-name="'AN'"
+        class="ma-4"
       ></UserAvatar>
       <p class="product-description">
         Short description of the card, its features, and any important
@@ -78,7 +158,7 @@ export default {
 
         <v-chip class="ma-2" color="green" text-color="white">
           <template v-slot:prepend>
-            <v-avatar class="green-darken-4"> 1 </v-avatar>
+            <v-avatar class="green-darken-4"> 1</v-avatar>
           </template>
           Years
         </v-chip>
@@ -107,10 +187,10 @@ export default {
         </v-chip>
       </div>
       <div class="purchase-options">
-        <button class="buy-button">Download</button>
-        <button class="buy-button">Add to Bookmark</button>
-        <button class="buy-button">Like</button>
-        <button class="buy-button">Report</button>
+        <v-btn class="buy-button">Download</v-btn>
+        <v-btn class="buy-button">Add to Bookmark</v-btn>
+        <v-btn class="buy-button">Like</v-btn>
+        <v-btn class="buy-button">Report</v-btn>
       </div>
     </div>
     <div class="product-page">
@@ -124,11 +204,11 @@ export default {
         <div class="review">
           <CommentCard
             :avatar-name="'GenesisAN'"
-            :user-name="'AN'"
-            :uploader-avatar="'https://picsum.photos/32/32'"
-            :user-handle="'@user123'"
-            :date="'2021-01-01'"
             :comment="'Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well.'"
+            :date="'2021-01-01'"
+            :uploader-avatar="'https://picsum.photos/32/32'"
+            :user-handle="'user123'"
+            :user-name="'AN'"
           >
           </CommentCard>
         </div>
@@ -142,9 +222,11 @@ export default {
 .product-header >>> ul.slick-dots {
   padding-left: 0px;
 }
+
 .review > * {
   margin: 10px;
 }
+
 .v-carousel .v-carousel-item {
   display: flex;
   justify-content: center;

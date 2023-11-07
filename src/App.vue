@@ -62,7 +62,6 @@
       <div class="user-container">
         <User :is-small-screen="isSmallScreen" />
       </div>
-
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on">

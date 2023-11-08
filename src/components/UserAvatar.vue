@@ -1,11 +1,12 @@
-<!-- UserAvatar.vue -->
 <template>
   <div>
     <div class="wrapper">
       <div class="gallery-flex-row" v-bind="$attrs">
-        <v-avatar>
-          <img v-if="avatarUrl" :src="avatarUrl" alt="user avatar" />
-          <span v-else>{{ avatarNameInitial }}</span>
+        <v-avatar :style="{ backgroundColor: avatarColor }" class="user-avatar">
+          <img v-if="hasAvatar" :src="avatarUrl" alt="user avatar" />
+          <span v-else class="white--text text-h5">{{
+            avatarNameInitial
+          }}</span>
         </v-avatar>
         <div>
           <div class="user-name">{{ userName }}</div>
@@ -20,32 +21,63 @@
 export default {
   name: "UserAvatar",
   props: {
-    avatarName: String,
     avatarUrl: String,
     userName: String,
     userHandle: String,
   },
+  data() {
+    return {
+      hasAvatar: true,
+      avatarColor: "",
+    };
+  },
+  created() {
+    if (!this.avatarUrl) {
+      this.hasAvatar = false;
+    }
+    this.avatarColor = this.stringToColor(this.userName);
+  },
+  methods: {
+    stringToColor(str) {
+      // 为了简化，我们仅使用用户名的长度来影响色相值
+      const hue = this.simpleHash(str) % 360;
+      // 设置饱和度为70%和亮度为80%来生成柔和的颜色
+      const saturation = 70;
+      const lightness = 80;
+      return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    },
+    simpleHash(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        hash = hash & hash; // Convert to 32bit integer
+      }
+      return hash;
+    },
+  },
   computed: {
     avatarNameInitial() {
-      return this.avatarName ? this.avatarName.charAt(0) : "";
+      return this.userName ? this.userName.charAt(0) : "";
     },
   },
 };
 </script>
 
+<!-- CSS 略 -->
+
 <style scoped>
 .wrapper {
   display: flex;
-  justify-content: center; /* 水平居中 */
-  width: 100%; /* 或者可以设置一个最大宽度 max-width */
+  justify-content: center;
+  width: 100%;
 }
 
 .gallery-flex-row {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start; /* 从左到右排列 */
-  max-width: 1200px; /* 容器的最大宽度，根据需要调整 */
-  gap: 10px; /* 卡片之间的间距，根据需要调整 */
+  justify-content: flex-start;
+  max-width: 1200px;
+  gap: 10px;
 }
 
 .user-avatar img {

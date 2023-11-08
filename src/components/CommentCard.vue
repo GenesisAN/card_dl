@@ -35,7 +35,9 @@
           <v-list-item-subtitle class="grey--text mr-4">
             {{ date }}
           </v-list-item-subtitle>
-
+          <v-btn color="secondary" icon rounded @click="replBtn">
+            <v-icon>mdi-message</v-icon>
+          </v-btn>
           <!-- Menu Button -->
           <v-menu offset-y transition="slide-y-transition">
             <template v-slot:activator="{ on, attrs }">
@@ -68,15 +70,19 @@ export default {
     userHandle: String,
     comment: String,
     date: String,
+    // repBtn按钮触发的函数,拥有一个string类型的参数
   },
   methods: {
     reportPost() {
       // Emit an event when the report button is clicked
-      this.$emit("report", {
-        userName: this.userName,
-        userHandle: this.userHandle,
-        date: this.date,
-      });
+      // this.$emit("report", {
+      //   userName: this.userName,
+      //   userHandle: this.userHandle,
+      //   date: this.date,
+      // });
+    },
+    replBtn() {
+      this.$emit("replBtnClick", "@" + this.userHandle + " ");
     },
   },
 };

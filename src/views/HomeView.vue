@@ -26,25 +26,25 @@
             <v-overlay
               v-if="index === hover"
               class="card-overlay clickable"
-              @click="goToCardDetail(card)"
+              @click="download(card.infoWeb)"
             >
               <div class="card-buttons">
-                <v-btn class="card-button" @click="download(card)"
+                <v-btn class="card-button" @click="download(card.path)"
                   >{{ $t("download") }}
                 </v-btn>
-                <v-btn class="card-button" @click="download(card)"
+                <v-btn class="card-button" @click="download(card.path)"
                   >{{ $t("like") }}
                 </v-btn>
-                <v-btn class="card-button" @click="download(card)"
+                <v-btn class="card-button" @click="download(card.path)"
                   >{{ $t("bookmark") }}
                 </v-btn>
               </div>
             </v-overlay>
           </div>
-          <v-card-title
-            class="card-title clickable"
-            @click="goToCardDetail(card)"
-            >{{ truncateString(card.Title, 8) }}
+          <v-card-title class="card-title">
+            <a :href="card.infoWeb" target="_blank" rel="noopener noreferrer">{{
+              truncateString(card.Title, 8)
+            }}</a>
           </v-card-title>
           <v-card-subtitle class="card-subtitle">
             <v-avatar class="avatar-brown" size="30">
@@ -62,6 +62,77 @@
   </div>
 </template>
 
+<script>
+import Vue from "vue";
+import InfiniteLoading from "vue-infinite-loading";
+import card from "../store/actions/card";
+
+export default Vue.extend({
+  computed: {
+    card() {
+      return card;
+    },
+  },
+  components: {
+    InfiniteLoading,
+  },
+  data: () => ({
+    page: 1,
+    list: [],
+    hover: -1,
+    loading: false,
+    visible: false,
+    current: -1,
+  }),
+  mounted() {
+    this.dealCards();
+  },
+  methods: {
+    dealCards() {
+      const delayIncrement = 100; // 100毫秒递增
+      this.list.forEach((card, index) => {
+        card.animationDelay = index * delayIncrement;
+      });
+    },
+    infiniteHandler($state) {
+      this.$store
+        .dispatch("serach_card", {
+          params: {
+            p: this.page,
+          },
+        })
+        .then((res) => {
+          if (res.data?.length > 0) {
+            this.page += 1;
+            // 将 res.data 整个放入 list 中
+            this.list = [...res.data];
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
+        });
+    },
+    download(item) {
+      console.log(item);
+      window.open(item);
+    },
+    hashDirs(md5) {
+      // 我们假设MD5长度为32，并取其前6个字符进行分割
+      let part1 = md5.slice(0, 2);
+      let part2 = md5.slice(2, 4);
+      let part3 = md5.slice(4, 6);
+
+      return `${part1}/${part2}/${part3}/${md5}`;
+    },
+    truncateString(str, num) {
+      if (str.length <= num) {
+        return str;
+      }
+      return str.slice(0, num) + "...";
+    },
+  },
+});
+</script>
 <style scoped>
 :root {
   --animation-delay: 0ms; /* 默认值 */
@@ -208,78 +279,3 @@
   }
 }
 </style>
-<script>
-import Vue from "vue";
-import InfiniteLoading from "vue-infinite-loading";
-
-export default Vue.extend({
-  components: {
-    InfiniteLoading,
-  },
-  data: () => ({
-    page: 1,
-    list: [],
-    hover: -1,
-    loading: false,
-    visible: false,
-    current: -1,
-  }),
-  mounted() {
-    this.dealCards();
-  },
-  methods: {
-    dealCards() {
-      const delayIncrement = 100; // 100毫秒递增
-      this.list.forEach((card, index) => {
-        card.animationDelay = index * delayIncrement;
-      });
-    },
-    infiniteHandler($state) {
-      this.$store
-        .dispatch("serach_card", {
-          params: {
-            p: this.page,
-          },
-        })
-        .then((res) => {
-          if (res.data?.length > 0) {
-            this.page += 1;
-            res.data.forEach((item, index) => {
-              // 计算3级哈希目录
-              item.Thumb =
-                res.baseURL + `/card/thumd/${item.CardType}/${item.MD5}.jpg`;
-              item.Path =
-                res.baseURL + `/card/image/${item.CardType}/${item.MD5}.png`;
-              item.uploader = item?.UploadUserInfo?.nickname ?? "匿名";
-              item.uploaderAvatar = item?.UploadUserInfo?.avatar ?? "";
-              item.AvatarName = item.uploader.slice(0, 1).toUpperCase();
-              item.style = `--animation-delay:${index * 100}ms`;
-              this.list.push(item);
-            });
-            $state.loaded();
-          } else {
-            $state.complete();
-          }
-        });
-    },
-    download(item) {
-      console.log(item);
-      window.open(item.Path);
-    },
-    hashDirs(md5) {
-      // 我们假设MD5长度为32，并取其前6个字符进行分割
-      let part1 = md5.slice(0, 2);
-      let part2 = md5.slice(2, 4);
-      let part3 = md5.slice(4, 6);
-
-      return `${part1}/${part2}/${part3}/${md5}`;
-    },
-    truncateString(str, num) {
-      if (str.length <= num) {
-        return str;
-      }
-      return str.slice(0, num) + "...";
-    },
-  },
-});
-</script>

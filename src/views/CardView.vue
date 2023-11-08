@@ -2,77 +2,124 @@
 import CommentCard from "@/components/CommentCard.vue";
 import UserAvatar from "@/components/UserAvatar.vue";
 import props from "vuetify/src/components/VCalendar/util/props";
+import card from "@/store/actions/card";
 
 export default {
   name: "CardView",
+  components: { UserAvatar, CommentCard },
   computed: {
     props() {
       return props;
     },
+    icon() {
+      return this.icons[this.iconIndex];
+    },
   },
-  components: { UserAvatar, CommentCard },
+
   data: () => ({
-    dialog: false,
+    card: {
+      ID: 0,
+      UploadTag: "",
+      UploadUserInfo: {
+        id: 0,
+        nickname: "",
+        avatar: "",
+        permission: 0,
+      },
+      Thumb: "",
+      Path: "",
+      Title: "Title",
+      DownloadCount: 0,
+      CardType: 6,
+      MD5: "",
+      UploadAt: "",
+      CommentsTag: "",
+      Comments: 0,
+      CommentBan: false,
+      ThreadID: 0,
+      Note: "",
+      CardMod: null,
+      CardPlugin: null,
+    },
+    message: "",
+    iconIndex: 0,
+    mods_length: 0,
+    plugins_length: 0,
+    icons: [
+      "mdi-emoticon",
+      "mdi-emoticon-cool",
+      "mdi-emoticon-dead",
+      "mdi-emoticon-excited",
+      "mdi-emoticon-happy",
+      "mdi-emoticon-neutral",
+      "mdi-emoticon-sad",
+      "mdi-emoticon-tongue",
+    ],
   }),
+  created() {
+    this.id = this.$route.params.id; // Type-casting as string
+    console.log("ID from URL:", this.md5);
+    this.$store
+      .dispatch("get_card_info", this.id)
+      .then((res) => {
+        console.log(res);
+        if (res.data != null) {
+          this.card = res.data;
+          this.mods_length = this.card?.CardMod ? this.card.CardMod.length : 0;
+          this.plugins_length = this.card?.CardPlugin
+            ? this.card.CardPlugin.length
+            : 0;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
+  methods: {
+    JumpToMsg() {
+      var element = document.getElementById("messagebox");
+      var elementPosition =
+        element.getBoundingClientRect().top + window.pageYOffset;
+
+      // 设置一个偏移量，例如往上偏移50像素
+      var offset = -450; // 往下偏移则使用正值
+
+      // 使用window.scrollTo函数滚动到目标位置，包含偏移
+      window.scrollTo({
+        top: elementPosition + offset,
+        behavior: "smooth",
+      });
+      element.focus();
+    },
+    ReplClick(param) {
+      this.JumpToMsg();
+      this.message += param;
+      console.log(param);
+    },
+    sendMessage() {
+      this.resetIcon();
+      this.clearMessage();
+    },
+    clearMessage() {
+      this.message = "";
+    },
+    resetIcon() {
+      this.iconIndex = 0;
+    },
+    changeIcon() {
+      this.iconIndex === this.icons.length - 1
+        ? (this.iconIndex = 0)
+        : this.iconIndex++;
+    },
+  },
 };
 </script>
 <template>
   <div>
-    <v-dialog v-model="dialog" persistent width="500">
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          bottom
-          color="blue"
-          dark
-          fab
-          fixed
-          right
-          v-bind="attrs"
-          x-large
-          v-on="on"
-        >
-          <!-- 这里放置按钮图标或文本 -->
-          <v-icon>mdi-message</v-icon>
-        </v-btn>
-      </template>
-      <v-card>
-        <v-card-title class="text-h5 lighten-2">
-          {{ $t("settings") }}
-        </v-card-title>
-        <v-col>
-          <v-container fluid>
-            <v-row align="center">
-              <v-col cols="6">
-                <v-subheader>{{ $t("language") }}</v-subheader>
-              </v-col>
-              <v-col cols="6">
-                <v-select
-                  v-model="set_lange"
-                  :items="states"
-                  :label="$t('select_language')"
-                  menu-props="auto"
-                ></v-select>
-              </v-col>
-            </v-row>
-            <v-row align="center">
-              <v-col cols="6">
-                <v-subheader>夜间模式</v-subheader>
-              </v-col>
-              <v-col cols="6">
-                <v-switch v-model="$vuetify.theme.dark"></v-switch>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-col>
-        <v-divider></v-divider>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="dialog = false"
-            >{{ $t("setting") }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <v-btn bottom color="blue" dark fab fixed right x-large @click="JumpToMsg">
+      <!-- 这里放置按钮图标或文本 -->
+      <v-icon>mdi-message</v-icon>
+    </v-btn>
     <v-btn
       bottom
       color="pink"
@@ -82,9 +129,7 @@ export default {
       right
       style="margin-bottom: 85px"
       x-large
-      @click="onClickFab"
     >
-      <!-- 这里放置按钮图标或文本 -->
       <v-icon>mdi-download</v-icon>
     </v-btn>
 
@@ -94,40 +139,50 @@ export default {
       <v-carousel>
         <v-carousel-item>
           <div class="d-flex justify-center align-center" style="height: 100%">
-            <img src="https://picsum.photos/1920/1080" />
+            <img :src="card.Thumb" />
           </div>
         </v-carousel-item>
+        <!--        <v-carousel-item>-->
+        <!--          <div class="d-flex justify-center align-center" style="height: 100%">-->
+        <!--            <img src="https://picsum.photos/1920/1080" />-->
+        <!--          </div>-->
+        <!--        </v-carousel-item>-->
 
-        <v-carousel-item>
-          <div class="d-flex justify-center align-center" style="height: 100%">
-            <img
-              src="http://localhost:3000/api/v1/card/thumd/1/9df566e37275a8c93d3be31319a7588e.jpg"
-            />
-          </div>
-        </v-carousel-item>
-
-        <v-carousel-item>
-          <div class="d-flex justify-center align-center" style="height: 100%">
-            <img
-              src="http://localhost:3000/api/v1/card/thumd/1/397ec4ed8a6d80b9151a4686c9b70494.jpg"
-            />
-          </div>
-        </v-carousel-item>
+        <!--        <v-carousel-item>-->
+        <!--          <div class="d-flex justify-center align-center" style="height: 100%">-->
+        <!--            <img src="https://picsum.photos/700/300" />-->
+        <!--          </div>-->
+        <!--        </v-carousel-item>-->
       </v-carousel>
       <!-- Author info container with flex: 1 -->
-      <h1 class="product-title">Card Title</h1>
+      <h1 class="product-title">{{ card.Title }}</h1>
+      <v-icon>mdi-download</v-icon>
+      {{ card.DownloadCount }}
+      <v-icon color="gra"> mdi-heart-multiple</v-icon>
+      0
+      <v-icon>mdi-bookmark-multiple</v-icon>
+      0
+      <p />
 
       <UserAvatar
-        :avatar-url="'https://picsum.photos/32/32'"
-        :user-handle="'user123'"
-        :user-name="'AN'"
+        :avatar-url="card.UploadUserInfo.avatar"
+        :user-handle="card.UploadUserInfo.nickname"
+        :user-name="card.UploadUserInfo.nickname"
+        :avatar-name="card.UploadUserInfo.AvatarName"
         class="ma-4"
       ></UserAvatar>
-      <p class="product-description">
-        Short description of the card, its features, and any important
-        information a player might want to know.
-      </p>
 
+      <p class="product-description">
+        {{ card.Note }}
+      </p>
+      <v-btn class="ma-2">
+        <v-icon>mdi-toy-brick-plus</v-icon>
+        {{ mods_length }}
+      </v-btn>
+      <v-btn class="ma-2">
+        <v-icon left>mdi-puzzle-plus</v-icon>
+        {{ plugins_length }}
+      </v-btn>
       <div class="text-center">
         <v-chip
           class="ma-2"
@@ -187,10 +242,11 @@ export default {
         </v-chip>
       </div>
       <div class="purchase-options">
-        <v-btn class="buy-button">Download</v-btn>
-        <v-btn class="buy-button">Add to Bookmark</v-btn>
-        <v-btn class="buy-button">Like</v-btn>
-        <v-btn class="buy-button">Report</v-btn>
+        <v-btn class="buy-button">{{ $t("download") }}</v-btn>
+        <v-btn class="buy-button">{{ $t("download_mod_pack") }}</v-btn>
+        <v-btn class="buy-button">{{ $t("like") }}</v-btn>
+        <v-btn class="buy-button">{{ $t("bookmark") }}</v-btn>
+        <v-btn class="buy-button">{{ $t("report") }}</v-btn>
       </div>
     </div>
     <div class="product-page">
@@ -198,17 +254,57 @@ export default {
       <!--        <h2>Details</h2>-->
       <!--        <p>Here you can add more detailed information about the card.</p>-->
       <!--      </div>-->
+      <v-form class="user-reviews">
+        <v-container>
+          <v-row>
+            <v-col cols="12">
+              <v-textarea
+                id="messagebox"
+                v-model="message"
+                :append-icon="icon"
+                :append-outer-icon="'mdi-send'"
+                filled
+                clear-icon="mdi-close-circle"
+                clearable
+                auto-grow
+                label="Message"
+                type="text"
+                @click:append="changeIcon"
+                @click:append-outer="sendMessage"
+                @click:clear="clearMessage"
+              ></v-textarea>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-form>
       <div class="user-reviews">
         <h2>User Reviews</h2>
         <!-- Assuming there are multiple reviews, so this would be repeated for each one. -->
         <div class="review">
           <CommentCard
-            :avatar-name="'GenesisAN'"
+            :comment="'Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well.'"
+            :date="'2021-01-01'"
+            :user-handle="'gena'"
+            :user-name="'GenesisAN'"
+            @replBtnClick="ReplClick"
+          >
+          </CommentCard>
+          <CommentCard
             :comment="'Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well.'"
             :date="'2021-01-01'"
             :uploader-avatar="'https://picsum.photos/32/32'"
-            :user-handle="'user123'"
-            :user-name="'AN'"
+            :user-handle="'77889'"
+            :user-name="'AN2'"
+            @replBtnClick="ReplClick"
+          >
+          </CommentCard>
+          <CommentCard
+            :comment="'Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well.'"
+            :date="'2021-01-01'"
+            :uploader-avatar="'https://picsum.photos/32/32'"
+            :user-handle="'551dscd'"
+            :user-name="'AN3'"
+            @replBtnClick="ReplClick"
           >
           </CommentCard>
         </div>

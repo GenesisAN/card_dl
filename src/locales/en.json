@@ -1,5 +1,4 @@
 {
-  "message": "hello i18n !!",
   "gallery": "Gallery",
   "upload": "Upload",
   "wiki": "Wiki",
@@ -46,5 +45,8 @@
   "like": "Like",
   "bookmark": "Bookmark",
   "report": "Report",
-  "download_mod_pack": "Download Mod Pack"
+  "download_mod_pack": "Download Mod Pack",
+  "comment_text": "Comments Text",
+  "comment": "Comments",
+  "no_comment": "No comments yet, be the first to comment!"
 }

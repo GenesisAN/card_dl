@@ -61,4 +61,22 @@ export default {
       return res;
     });
   },
+  //获取卡片评论
+  async get_card_comment({ commit }: any, id: any) {
+    return request.get("/posts/" + id).then((res: any) => {
+      if (res.data == null) {
+        res.data = [];
+        return res;
+      }
+      return res;
+    });
+  },
+  async send_card_comment({ commit }: any, form: any) {
+    // code to log in the user
+    return request.post("/posts/create", form, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  },
 };

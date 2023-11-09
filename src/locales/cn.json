@@ -1,5 +1,4 @@
 {
-  "message": "你好 i18n !!",
   "gallery": "画廊",
   "upload": "上传",
   "wiki": "百科",
@@ -46,5 +45,9 @@
   "like": "喜欢",
   "bookmark": "收藏",
   "report": "举报",
-  "download_mod_pack": "下载模组包"
+  "download_mod_pack": "下载模组包",
+  "comment_text": "发表回复",
+  "comment": "回复",
+  "no_comment": "没有人回复捏~杂鱼！"
+
 }

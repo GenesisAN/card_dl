@@ -14,8 +14,19 @@ export default {
     icon() {
       return this.icons[this.iconIndex];
     },
+    currentLang() {
+      // 返回当前选择的语言ID
+      return (
+        this.lang_map[localStorage.getItem("set_lange")] ||
+        this.lang_map["English"]
+      );
+    },
+    translatedTags() {
+      return this.card.Tags.map((tag) => {
+        return this.getTranslation(tag.tts, this.currentLang);
+      });
+    },
   },
-
   data: () => ({
     card: {
       ID: 0,
@@ -45,6 +56,11 @@ export default {
     iconIndex: 0,
     mods_length: 0,
     plugins_length: 0,
+    commits: [],
+    lang_map: {
+      English: 1,
+      简体中文: 2,
+    },
     icons: [
       "mdi-emoticon",
       "mdi-emoticon-cool",
@@ -58,31 +74,56 @@ export default {
   }),
   created() {
     this.id = this.$route.params.id; // Type-casting as string
-    console.log("ID from URL:", this.md5);
-    this.$store
-      .dispatch("get_card_info", this.id)
-      .then((res) => {
-        console.log(res);
-        if (res.data != null) {
-          this.card = res.data;
-          this.mods_length = this.card?.CardMod ? this.card.CardMod.length : 0;
-          this.plugins_length = this.card?.CardPlugin
-            ? this.card.CardPlugin.length
-            : 0;
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    // console.log("ID from URL:", this.md5);
+    this.LoadCardInfo(this.id);
   },
   methods: {
+    getTranslation(tts, currentLocale) {
+      // 找出当前语言环境对应的翻译
+      const translation = tts.find((t) => t.lan === currentLocale);
+      // 如果找到了对应的翻译，则返回它；否则，返回默认的第一个翻译
+      return translation ? translation.tt : tts[0].tt;
+    },
+    LoadCardInfo(id) {
+      this.$store
+        .dispatch("get_card_info", id)
+        .then((res) => {
+          console.log(res);
+          if (res.data != null) {
+            this.card = res.data;
+            this.mods_length = this.card?.CardMod
+              ? this.card.CardMod.length
+              : 0;
+            this.plugins_length = this.card?.CardPlugin
+              ? this.card.CardPlugin.length
+              : 0;
+            this.LoadCardPosts(this.card.ThreadID);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    LoadCardPosts(id) {
+      this.$store
+        .dispatch("get_card_comment", id)
+        .then((res) => {
+          if (res.data != null) {
+            console.log(res);
+            this.commits = res.data;
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     JumpToMsg() {
-      var element = document.getElementById("messagebox");
-      var elementPosition =
+      const element = document.getElementById("messagebox");
+      const elementPosition =
         element.getBoundingClientRect().top + window.pageYOffset;
 
       // 设置一个偏移量，例如往上偏移50像素
-      var offset = -450; // 往下偏移则使用正值
+      const offset = -450; // 往下偏移则使用正值
 
       // 使用window.scrollTo函数滚动到目标位置，包含偏移
       window.scrollTo({
@@ -97,8 +138,22 @@ export default {
       console.log(param);
     },
     sendMessage() {
-      this.resetIcon();
-      this.clearMessage();
+      this.$store
+        .dispatch("send_card_comment", {
+          thread_id: this.card.ThreadID,
+          content: this.message,
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.code === 0) {
+            this.commits.push(res.data);
+          }
+          this.resetIcon();
+          this.clearMessage();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     clearMessage() {
       this.message = "";
@@ -142,17 +197,17 @@ export default {
             <img :src="card.Thumb" />
           </div>
         </v-carousel-item>
-        <!--        <v-carousel-item>-->
-        <!--          <div class="d-flex justify-center align-center" style="height: 100%">-->
-        <!--            <img src="https://picsum.photos/1920/1080" />-->
-        <!--          </div>-->
-        <!--        </v-carousel-item>-->
+        <!--  <v-carousel-item>-->
+        <!--    <div class="d-flex justify-center align-center" style="height: 100%">-->
+        <!--      <img src="https://picsum.photos/1920/1080" />-->
+        <!--    </div>-->
+        <!--  </v-carousel-item>-->
 
-        <!--        <v-carousel-item>-->
-        <!--          <div class="d-flex justify-center align-center" style="height: 100%">-->
-        <!--            <img src="https://picsum.photos/700/300" />-->
-        <!--          </div>-->
-        <!--        </v-carousel-item>-->
+        <!--  <v-carousel-item>-->
+        <!--    <div class="d-flex justify-center align-center" style="height: 100%">-->
+        <!--      <img src="https://picsum.photos/700/300" />-->
+        <!--    </div>-->
+        <!--  </v-carousel-item>-->
       </v-carousel>
       <!-- Author info container with flex: 1 -->
       <h1 class="product-title">{{ card.Title }}</h1>
@@ -185,60 +240,13 @@ export default {
       </v-btn>
       <div class="text-center">
         <v-chip
+          v-for="t in card.Tags"
+          :key="t.ID"
           class="ma-2"
           color="indigo"
-          prepend-icon="mdi-account-circle"
           text-color="white"
         >
-          Mike
-        </v-chip>
-
-        <v-chip
-          append-icon="mdi-star"
-          class="ma-2"
-          color="orange"
-          text-color="white"
-        >
-          Premium
-        </v-chip>
-
-        <v-chip
-          append-icon="mdi-cake-variant"
-          class="ma-2"
-          color="primary"
-          text-color="white"
-        >
-          1 Year
-        </v-chip>
-
-        <v-chip class="ma-2" color="green" text-color="white">
-          <template v-slot:prepend>
-            <v-avatar class="green-darken-4"> 1</v-avatar>
-          </template>
-          Years
-        </v-chip>
-
-        <v-chip
-          :model-value="true"
-          class="ma-2"
-          closable
-          color="teal"
-          prepend-icon="mdi-checkbox-marked-circle"
-          text-color="white"
-        >
-          Confirmed
-        </v-chip>
-
-        <v-chip
-          :model-value="true"
-          class="ma-2"
-          closable
-          close-icon="mdi-delete"
-          color="teal"
-          prepend-icon="mdi-checkbox-marked-circle"
-          text-color="white"
-        >
-          Confirmed
+          {{ getTranslation(t.tts, currentLang) }}
         </v-chip>
       </div>
       <div class="purchase-options">
@@ -255,7 +263,7 @@ export default {
       <!--        <p>Here you can add more detailed information about the card.</p>-->
       <!--      </div>-->
       <v-form class="user-reviews">
-        <v-container>
+        <v-container fluid>
           <v-row>
             <v-col cols="12">
               <v-textarea
@@ -264,10 +272,12 @@ export default {
                 :append-icon="icon"
                 :append-outer-icon="'mdi-send'"
                 filled
+                rows="1"
+                counter
                 clear-icon="mdi-close-circle"
                 clearable
                 auto-grow
-                label="Message"
+                :label="$t('comment_text')"
                 type="text"
                 @click:append="changeIcon"
                 @click:append-outer="sendMessage"
@@ -278,44 +288,35 @@ export default {
         </v-container>
       </v-form>
       <div class="user-reviews">
-        <h2>User Reviews</h2>
+        <h2>{{ $t("comment") }}</h2>
         <!-- Assuming there are multiple reviews, so this would be repeated for each one. -->
         <div class="review">
+          <v-card v-if="commits.length == 0">
+            <v-card-title class="text-center">
+              <v-card-text class="text-center">
+                {{ $t("no_comment") }}
+              </v-card-text>
+            </v-card-title>
+          </v-card>
           <CommentCard
-            :comment="'Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well.'"
-            :date="'2021-01-01'"
-            :user-handle="'gena'"
-            :user-name="'GenesisAN'"
-            @replBtnClick="ReplClick"
-          >
-          </CommentCard>
-          <CommentCard
-            :comment="'Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well.'"
-            :date="'2021-01-01'"
-            :uploader-avatar="'https://picsum.photos/32/32'"
-            :user-handle="'77889'"
-            :user-name="'AN2'"
-            @replBtnClick="ReplClick"
-          >
-          </CommentCard>
-          <CommentCard
-            :comment="'Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well.'"
-            :date="'2021-01-01'"
-            :uploader-avatar="'https://picsum.photos/32/32'"
-            :user-handle="'551dscd'"
-            :user-name="'AN3'"
+            v-for="c in commits"
+            :key="c.id"
+            :comment="c.content"
+            :date="c.created_at"
+            :avatar-url="c.avatar"
+            :user-name="c.nickname"
+            :user-handle="c.nickname"
             @replBtnClick="ReplClick"
           >
           </CommentCard>
         </div>
-        <!-- Repeat the above div for each review -->
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.product-header >>> ul.slick-dots {
+.product-header :deep(ul.slick-dots) {
   padding-left: 0px;
 }
 

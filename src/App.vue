@@ -4,6 +4,7 @@
       <v-toolbar-title class="mx-2">
         <h1 class="display-1 font-weight-bold" @click="$router.push('/')">
           CardDL
+          <v-icon size="35" color="red">mdi-dev-to</v-icon>
         </h1>
       </v-toolbar-title>
 
@@ -116,6 +117,9 @@
     <v-main>
       <router-view />
     </v-main>
+    <v-footer color="deep-orange">
+      <div style="display: flex"><span>© 2021 CardDL</span></div>
+    </v-footer>
   </v-app>
 </template>
 

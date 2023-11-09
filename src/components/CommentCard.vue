@@ -8,21 +8,8 @@
     <!-- Actions and User Info -->
     <v-card-actions class="comment-actions comment-text">
       <v-row class="w-100 d-flex align-center justify-space-between no-gutters">
-        <!-- User Avatar and Info -->
-        <!--        <v-col class="d-flex align-center">-->
-        <!--          <v-avatar class="mr-3 comment-avatar">-->
-        <!--            <img v-if="uploaderAvatar" :src="uploaderAvatar" />-->
-        <!--            <span v-else class="black&#45;&#45;text text-h5">{{ avatarName }}</span>-->
-        <!--          </v-avatar>-->
-        <!--          <v-list-item-content>-->
-        <!--            <v-list-item-title>{{ userName }}</v-list-item-title>-->
-        <!--            <v-list-item-subtitle class="grey&#45;&#45;text text&#45;&#45;lighten-1">-->
-        <!--              {{ userHandle }}-->
-        <!--            </v-list-item-subtitle>-->
-        <!--          </v-list-item-content>-->
-        <!--        </v-col>-->
         <UserAvatar
-          :avatar-url="uploaderAvatar"
+          :avatar-url="avatarUrl"
           :user-handle="userHandle"
           :user-name="userName"
           class="align-center"
@@ -33,7 +20,7 @@
         <!-- Date and Menu -->
         <v-col class="d-flex align-center justify-end" cols="auto">
           <v-list-item-subtitle class="grey--text mr-4">
-            {{ date }}
+            {{ timeAgo(date) }}
           </v-list-item-subtitle>
           <v-btn color="secondary" icon rounded @click="replBtn">
             <v-icon>mdi-message</v-icon>
@@ -64,11 +51,11 @@ export default {
   name: "CommentCard",
   components: { UserAvatar },
   props: {
-    avatarName: String,
-    uploaderAvatar: String,
+    avatarUrl: String,
     userName: String,
     userHandle: String,
     comment: String,
+    index: String,
     date: String,
     // repBtn按钮触发的函数,拥有一个string类型的参数
   },
@@ -84,17 +71,35 @@ export default {
     replBtn() {
       this.$emit("replBtnClick", "@" + this.userHandle + " ");
     },
+    timeAgo(dateString) {
+      const backendTime = new Date(dateString);
+      const currentTime = new Date();
+
+      // Calculate the time difference in milliseconds
+      const timeDifference = currentTime - backendTime;
+
+      // Convert time difference to minutes, hours, and days
+      const minutesAgo = Math.floor(timeDifference / 60000);
+      const hoursAgo = Math.floor(timeDifference / 3600000);
+      const daysAgo = Math.floor(timeDifference / 86400000);
+
+      if (minutesAgo < 60) {
+        return `${minutesAgo}分钟前`;
+      } else if (hoursAgo < 24) {
+        return `${hoursAgo}小时前`;
+      } else {
+        const options = { month: "numeric", day: "numeric" };
+        if (backendTime.getFullYear() !== currentTime.getFullYear()) {
+          options.year = "numeric";
+        }
+        return backendTime.toLocaleDateString("zh-CN", options);
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
-.comment-card .icon-dots {
-}
-
-.comment-card {
-}
-
 .comment-card .comment-text {
   padding-left: 16px; /* Padding to align text with the avatar and menu icon */
   padding-right: 16px; /* Padding to maintain consistency */

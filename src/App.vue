@@ -1,10 +1,10 @@
 <template>
-  <v-app :dark="$vuetify.theme.dark">
+  <v-app :dark="dark">
     <v-app-bar app>
       <v-toolbar-title class="mx-2">
         <h1 class="display-1 font-weight-bold" @click="$router.push('/')">
           CardDL
-          <v-icon size="35" color="red">mdi-dev-to</v-icon>
+          <v-icon color="red" size="35">mdi-dev-to</v-icon>
         </h1>
       </v-toolbar-title>
 
@@ -93,10 +93,10 @@
               </v-row>
               <v-row align="center">
                 <v-col cols="6">
-                  <v-subheader>夜间模式</v-subheader>
+                  <v-subheader>{{ $t("night_mode") }}</v-subheader>
                 </v-col>
                 <v-col cols="6">
-                  <v-switch v-model="$vuetify.theme.dark"></v-switch>
+                  <v-switch v-model="dark"></v-switch>
                 </v-col>
               </v-row>
             </v-container>
@@ -117,8 +117,12 @@
     <v-main>
       <router-view />
     </v-main>
-    <v-footer color="deep-orange">
-      <div style="display: flex"><span>© 2021 CardDL</span></div>
+    <v-footer>
+      <span>© 2023 CardDL </span>
+      <a href="mailto: admin@kkgkd.com"
+        >{{ $t("feedback") }}
+        <v-icon>mdi-email</v-icon>
+      </a>
     </v-footer>
   </v-app>
 </template>
@@ -138,8 +142,14 @@ export default Vue.extend({
     isSmallScreen: false, // New data for checking screen size
   }),
   computed: {
-    dark() {
-      return this.$vuetify.theme.dark;
+    dark: {
+      get() {
+        return this.$vuetify.theme.dark;
+      },
+      set(value) {
+        this.$vuetify.theme.dark = value;
+        localStorage.setItem("darkMode", value);
+      },
     },
   },
   methods: {
@@ -168,13 +178,18 @@ export default Vue.extend({
       this.set_lange = localStorage.set_lange;
       this.chang_lange();
     }
+
+    const darkMode = localStorage.getItem("darkMode");
+    if (darkMode !== null) {
+      this.$vuetify.theme.dark = JSON.parse(darkMode);
+    }
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.checkScreenSize);
   },
   watch: {
     set_lange(newName) {
-      localStorage.set_lange = newName;
+      localStorage.setItem("set_lange", newName);
     },
   },
 });

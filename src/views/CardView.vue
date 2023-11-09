@@ -2,7 +2,6 @@
 import CommentCard from "@/components/CommentCard.vue";
 import UserAvatar from "@/components/UserAvatar.vue";
 import props from "vuetify/src/components/VCalendar/util/props";
-import card from "@/store/actions/card";
 
 export default {
   name: "CardView",
@@ -55,8 +54,12 @@ export default {
     message: "",
     iconIndex: 0,
     mods_length: 0,
+    mods_name: [],
     plugins_length: 0,
+    plugins_name: [],
     commits: [],
+    mode_dialog: false,
+    plug_dialog: false,
     lang_map: {
       English: 1,
       简体中文: 2,
@@ -91,12 +94,27 @@ export default {
           console.log(res);
           if (res.data != null) {
             this.card = res.data;
-            this.mods_length = this.card?.CardMod
-              ? this.card.CardMod.length
-              : 0;
-            this.plugins_length = this.card?.CardPlugin
-              ? this.card.CardPlugin.length
-              : 0;
+            // this.mods_length = this.card?.CardMod
+            //   ? this.card.CardMod.length
+            //   : 0;
+            // this.plugins_length = this.card?.CardPlugin
+            //   ? this.card.CardPlugin.length
+            //   : 0;
+
+            //上面这个有办法简化吗？
+            this.card.CardMod?.forEach((item) => {
+              if (!this.mods_name.includes(item.GUID)) {
+                this.mods_name.push(item.GUID);
+              }
+            });
+            this.mods_length = this.mods_name.length;
+            this.card.CardPlugin?.forEach((item) => {
+              if (!this.plugins_name.includes(item.Name)) {
+                this.plugins_name.push(item.Name);
+              }
+            });
+            this.plugins_length = this.plugins_name.length;
+
             this.LoadCardPosts(this.card.ThreadID);
           }
         })
@@ -171,10 +189,11 @@ export default {
 </script>
 <template>
   <div>
+    <!-- ↓↓↓悬浮的回复按钮↓↓↓ -->
     <v-btn bottom color="blue" dark fab fixed right x-large @click="JumpToMsg">
-      <!-- 这里放置按钮图标或文本 -->
       <v-icon>mdi-message</v-icon>
     </v-btn>
+    <!-- ↓↓↓悬浮的下载按钮↓↓↓ -->
     <v-btn
       bottom
       color="pink"
@@ -188,10 +207,9 @@ export default {
       <v-icon>mdi-download</v-icon>
     </v-btn>
 
-    <!-- Product header will now use flexbox to align items -->
     <div class="product-header">
-      <!-- Carousel container with flex: 2 to take twice as much space as author info -->
       <v-carousel>
+        <!-- ↓↓↓开头展示的封面图片，可以有多个！↓↓↓ -->
         <v-carousel-item>
           <div class="d-flex justify-center align-center" style="height: 100%">
             <img :src="card.Thumb" />
@@ -218,26 +236,89 @@ export default {
       <v-icon>mdi-bookmark-multiple</v-icon>
       0
       <p />
-
+      <!-- ↓↓↓作者用户头像↓↓↓ -->
       <UserAvatar
+        :avatar-name="card.UploadUserInfo.AvatarName"
         :avatar-url="card.UploadUserInfo.avatar"
         :user-handle="card.UploadUserInfo.nickname"
         :user-name="card.UploadUserInfo.nickname"
-        :avatar-name="card.UploadUserInfo.AvatarName"
         class="ma-4"
       ></UserAvatar>
-
+      <!-- ↓↓↓卡片介绍正文↓↓↓ -->
       <p class="product-description">
         {{ card.Note }}
       </p>
-      <v-btn class="ma-2">
-        <v-icon>mdi-toy-brick-plus</v-icon>
-        {{ mods_length }}
-      </v-btn>
-      <v-btn class="ma-2">
-        <v-icon left>mdi-puzzle-plus</v-icon>
-        {{ plugins_length }}
-      </v-btn>
+      <!-- ↓↓↓模组和插件按钮↓↓↓ -->
+      <div class="text-center">
+        <v-dialog v-model="mode_dialog" width="500">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn class="ma-2" v-bind="attrs" v-on="on">
+              <v-icon>mdi-toy-brick-plus</v-icon>
+              {{ mods_length }}
+            </v-btn>
+          </template>
+
+          <v-card>
+            <v-card-title class="text-h5 lighten-2">
+              {{ $t("mode_list") }}
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text v-scroll>
+              <p />
+              <a
+                v-for="m in mods_name"
+                v-bind:key="m"
+                href="/about"
+                style="display: block; margin-bottom: 10px"
+              >
+                {{ m }}
+              </a>
+            </v-card-text>
+            <v-divider></v-divider>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" text @click="mode_dialog = false">
+                I accept
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="plug_dialog" width="500">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn class="ma-2" v-bind="attrs" v-on="on">
+              <v-icon>mdi-puzzle-plus</v-icon>
+              {{ plugins_length }}
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title class="text-h5 lighten-2">
+              {{ $t("plugin_list") }}
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text v-scroll>
+              <p />
+              <a
+                v-for="p in plugins_name"
+                v-bind:key="p"
+                href="/about"
+                style="display: block; margin-bottom: 10px"
+              >
+                {{ p }}
+              </a>
+            </v-card-text>
+            <v-divider></v-divider>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" text @click="plug_dialog = false">
+                I accept
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </div>
+      <!-- ↓↓↓卡片标签↓↓↓ -->
       <div class="text-center">
         <v-chip
           v-for="t in card.Tags"
@@ -249,6 +330,7 @@ export default {
           {{ getTranslation(t.tts, currentLang) }}
         </v-chip>
       </div>
+      <!-- ↓↓↓下载，收藏，点赞，举报↓↓↓ -->
       <div class="purchase-options">
         <v-btn class="buy-button">{{ $t("download") }}</v-btn>
         <v-btn class="buy-button">{{ $t("download_mod_pack") }}</v-btn>
@@ -257,11 +339,9 @@ export default {
         <v-btn class="buy-button">{{ $t("report") }}</v-btn>
       </div>
     </div>
+    <!-- ↓↓↓回复区域↓↓↓ -->
     <div class="product-page">
-      <!--      <div class="product-details">-->
-      <!--        <h2>Details</h2>-->
-      <!--        <p>Here you can add more detailed information about the card.</p>-->
-      <!--      </div>-->
+      <!-- ↓↓↓回复输入框↓↓↓ -->
       <v-form class="user-reviews">
         <v-container fluid>
           <v-row>
@@ -271,13 +351,13 @@ export default {
                 v-model="message"
                 :append-icon="icon"
                 :append-outer-icon="'mdi-send'"
-                filled
-                rows="1"
-                counter
+                :label="$t('comment_text')"
+                auto-grow
                 clear-icon="mdi-close-circle"
                 clearable
-                auto-grow
-                :label="$t('comment_text')"
+                counter
+                filled
+                rows="1"
                 type="text"
                 @click:append="changeIcon"
                 @click:append-outer="sendMessage"
@@ -287,10 +367,12 @@ export default {
           </v-row>
         </v-container>
       </v-form>
+      <!-- ↓↓↓评论区域↓↓↓ -->
       <div class="user-reviews">
         <h2>{{ $t("comment") }}</h2>
-        <!-- Assuming there are multiple reviews, so this would be repeated for each one. -->
+        <!-- ↓↓↓评论内容遍历展示↓↓↓ -->
         <div class="review">
+          <!-- ↓↓↓没有评论时的展示↓↓↓ -->
           <v-card v-if="commits.length == 0">
             <v-card-title class="text-center">
               <v-card-text class="text-center">
@@ -298,14 +380,15 @@ export default {
               </v-card-text>
             </v-card-title>
           </v-card>
+          <!-- ↓↓↓有评论时的展示↓↓↓ -->
           <CommentCard
             v-for="c in commits"
             :key="c.id"
+            :avatar-url="c.avatar"
             :comment="c.content"
             :date="c.created_at"
-            :avatar-url="c.avatar"
-            :user-name="c.nickname"
             :user-handle="c.nickname"
+            :user-name="c.nickname"
             @replBtnClick="ReplClick"
           >
           </CommentCard>

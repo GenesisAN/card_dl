@@ -1,17 +1,26 @@
 import router from "@/router";
 import store from "@/store";
 import axios, { AxiosRequestConfig } from "axios";
-const { VUE_APP_URL, VUE_APP_URL_HTTPS, NODE_ENV } = process.env;
+const {
+  VUE_APP_BASE_URL,
+  VUE_APP_URL_VERSION,
+  VUE_APP_WEB_URL,
+  VUE_APP_URL_HTTPS,
+  NODE_ENV,
+} = process.env;
 const http = VUE_APP_URL_HTTPS === "true" ? "https" : "http";
 console.log(
-  NODE_ENV.indexOf("production") === -1 ? "/web/" : `${http}://${VUE_APP_URL}`
+  NODE_ENV.indexOf("production") === -1
+    ? "/web/"
+    : `${http}://${VUE_APP_BASE_URL}`
 );
-// 创建axios实例，在这里可以设置请求的默认配置
+export const baseAPIURL = `${http}://${VUE_APP_BASE_URL}/api/${VUE_APP_URL_VERSION}`;
+export const baseWEBURL = `${http}://${VUE_APP_WEB_URL}`;
 const request = axios.create({
   withCredentials: true,
   timeout: 60000, // 设置超时时间10s
   // baseURL: NODE_ENV.indexOf('production') !== -1 ? '/web/' : `${http}://${VUE_APP_URL}` // `${http}://${VUE_APP_URL}`  //根据自己配置的反向代理去设置不同环境的baeUrl
-  baseURL: `${http}://${VUE_APP_URL}`,
+  baseURL: `${http}://${VUE_APP_BASE_URL}/api/${VUE_APP_URL_VERSION}`,
 });
 /** 添加响应拦截器  **/
 request.interceptors.response.use(

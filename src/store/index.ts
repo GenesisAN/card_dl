@@ -4,6 +4,8 @@ import Vuex from "vuex";
 import VuexPersistence from "vuex-persist";
 import userActions, { UserData } from "./actions/user";
 import cardActions from "./actions/card";
+import tagActions from "./actions/tag";
+
 Vue.use(Vuex);
 
 const vuexLocal = new VuexPersistence({
@@ -30,6 +32,7 @@ export default new Vuex.Store({
   actions: {
     ...userActions,
     ...cardActions,
+    ...tagActions,
   },
   plugins: [vuexLocal.plugin],
 });

@@ -102,7 +102,7 @@ export default class RegisterView extends Vue {
       .then((res: any) => {
         console.log(res);
         if (res.code === 0) {
-          this.$router.push("/");
+          this.$router.push("/login");
         } else {
           this.registerError = res.msg;
         }

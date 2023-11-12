@@ -1,29 +1,33 @@
 <template>
-  <v-app>
+  <v-app :dark="dark">
     <v-app-bar app>
       <v-toolbar-title class="mx-2">
         <h1 class="display-1 font-weight-bold" @click="$router.push('/')">
           CardDL
+          <v-icon color="red" size="35">mdi-dev-to</v-icon>
         </h1>
       </v-toolbar-title>
 
-      <v-btn v-if="!isSmallScreen" @click="$router.push('/')" text>
+      <v-btn v-if="!isSmallScreen" text @click="$router.push('/')">
         <span>{{ $t("gallery") }}</span>
       </v-btn>
-      <v-btn v-if="!isSmallScreen" @click="$router.push('/card_upload')" text>
+      <v-btn v-if="!isSmallScreen" text @click="$router.push('/card_upload')">
         <span>{{ $t("upload") }}</span>
+      </v-btn>
+      <v-btn v-if="!isSmallScreen" text @click="$router.push('/mode')">
+        <span>{{ $t("mode") }}</span>
       </v-btn>
       <v-btn v-if="!isSmallScreen" text>
         <span class="mr-2">{{ $t("support") }}</span>
         <v-icon>mdi-professional-hexagon</v-icon>
       </v-btn>
-      <v-btn v-if="!isSmallScreen" @click="wiki" text>
+      <v-btn v-if="!isSmallScreen" text @click="wiki">
         <span>{{ $t("wiki") }}</span>
       </v-btn>
-      <v-btn v-if="!isSmallScreen" @click="about" text>
+      <v-btn v-if="!isSmallScreen" text @click="about">
         <span>{{ $t("about") }}</span>
       </v-btn>
-      <v-menu v-if="isSmallScreen">
+      <v-menu v-if="isSmallScreen" transition="slide-y-transition">
         <!-- Trigger button -->
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
@@ -39,10 +43,13 @@
             <v-list-item @click="$router.push('/card_upload')">
               <v-list-item-title>{{ $t("upload") }}</v-list-item-title>
             </v-list-item>
+            <v-list-item @click="$router.push('/mode')">
+              <v-list-item-title>{{ $t("mode") }}</v-list-item-title>
+            </v-list-item>
             <v-list-item>
               <v-list-item-title>{{ $t("support") }}</v-list-item-title>
             </v-list-item>
-            <v-list-item @click="wiki">
+            <v-list-item href="https://doc.kkgkd.com/">
               <v-list-item-title>{{ $t("wiki") }}</v-list-item-title>
             </v-list-item>
             <v-list-item @click="about">
@@ -56,7 +63,6 @@
       <div class="user-container">
         <User :is-small-screen="isSmallScreen" />
       </div>
-
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on">
@@ -64,7 +70,10 @@
           </v-btn>
         </template>
         <v-card>
-          <v-card-title class="text-h5 grey lighten-2">
+          <v-card-title
+            :class="{ primary: !dark, secondary: dark }"
+            class="text-h5 lighten-2"
+          >
             {{ $t("settings") }}
           </v-card-title>
           <v-col>
@@ -82,14 +91,22 @@
                   ></v-select>
                 </v-col>
               </v-row>
+              <v-row align="center">
+                <v-col cols="6">
+                  <v-subheader>{{ $t("night_mode") }}</v-subheader>
+                </v-col>
+                <v-col cols="6">
+                  <v-switch v-model="dark"></v-switch>
+                </v-col>
+              </v-row>
             </v-container>
           </v-col>
           <v-divider></v-divider>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="chang_lange">{{
-              $t("setting")
-            }}</v-btn>
+            <v-btn color="primary" text @click="chang_lange"
+              >{{ $t("setting") }}
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -100,6 +117,13 @@
     <v-main>
       <router-view />
     </v-main>
+    <v-footer>
+      <span>© 2023 CardDL </span>
+      <a href="mailto: admin@kkgkd.com"
+        >{{ $t("feedback") }}
+        <v-icon>mdi-email</v-icon>
+      </a>
+    </v-footer>
   </v-app>
 </template>
 
@@ -117,7 +141,22 @@ export default Vue.extend({
     tags: [""],
     isSmallScreen: false, // New data for checking screen size
   }),
+  computed: {
+    dark: {
+      get() {
+        return this.$vuetify.theme.dark;
+      },
+      set(value) {
+        this.$vuetify.theme.dark = value;
+        localStorage.setItem("darkMode", value);
+      },
+    },
+  },
   methods: {
+    wiki() {
+      //打开新窗口
+      window.open("https://doc.kkgkd.com/");
+    },
     about() {
       this.$router.push("/about");
     },
@@ -143,13 +182,18 @@ export default Vue.extend({
       this.set_lange = localStorage.set_lange;
       this.chang_lange();
     }
+
+    const darkMode = localStorage.getItem("darkMode");
+    if (darkMode !== null) {
+      this.$vuetify.theme.dark = JSON.parse(darkMode);
+    }
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.checkScreenSize);
   },
   watch: {
     set_lange(newName) {
-      localStorage.set_lange = newName;
+      localStorage.setItem("set_lange", newName);
     },
   },
 });

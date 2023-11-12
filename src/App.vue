@@ -21,7 +21,7 @@
         <span class="mr-2">{{ $t("support") }}</span>
         <v-icon>mdi-professional-hexagon</v-icon>
       </v-btn>
-      <v-btn v-if="!isSmallScreen" text>
+      <v-btn v-if="!isSmallScreen" text @click="wiki">
         <span>{{ $t("wiki") }}</span>
       </v-btn>
       <v-btn v-if="!isSmallScreen" text @click="about">
@@ -49,7 +49,7 @@
             <v-list-item>
               <v-list-item-title>{{ $t("support") }}</v-list-item-title>
             </v-list-item>
-            <v-list-item>
+            <v-list-item href="https://doc.kkgkd.com/">
               <v-list-item-title>{{ $t("wiki") }}</v-list-item-title>
             </v-list-item>
             <v-list-item @click="about">
@@ -153,6 +153,10 @@ export default Vue.extend({
     },
   },
   methods: {
+    wiki() {
+      //打开新窗口
+      window.open("https://doc.kkgkd.com/");
+    },
     about() {
       this.$router.push("/about");
     },

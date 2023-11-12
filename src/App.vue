@@ -117,12 +117,18 @@
     <v-main>
       <router-view />
     </v-main>
-    <v-footer>
+    <v-footer class="flex-column">
       <span>© 2023 CardDL </span>
       <a href="mailto: admin@kkgkd.com"
         >{{ $t("feedback") }}
         <v-icon>mdi-email</v-icon>
       </a>
+      <div class="scrolling-text align-center" style="width: 50%">
+        <p class="orange">
+          //////////开放性测试中//////////////////////上传数据会被清空
+          //////////////////////但账户不会删除//////////////////////参与账户会赋予特殊标记///////////
+        </p>
+      </div>
     </v-footer>
   </v-app>
 </template>
@@ -208,6 +214,25 @@ export default Vue.extend({
 @media (max-width: 600px) {
   .v-toolbar-title h1 {
     font-size: 1.5rem;
+  }
+}
+
+.scrolling-text {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.scrolling-text p {
+  display: inline-block;
+  animation: scroll-left 8s linear infinite;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
   }
 }
 </style>

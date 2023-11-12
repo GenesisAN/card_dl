@@ -54,7 +54,7 @@ export default {
     message: "",
     iconIndex: 0,
     mods_length: 0,
-    mods_name: [],
+    mods_name: {},
     plugins_length: 0,
     plugins_name: [],
     commits: [],
@@ -100,14 +100,23 @@ export default {
             // this.plugins_length = this.card?.CardPlugin
             //   ? this.card.CardPlugin.length
             //   : 0;
-
-            //上面这个有办法简化吗？
             this.card.CardMod?.forEach((item) => {
-              if (!this.mods_name.includes(item.GUID)) {
-                this.mods_name.push(item.GUID);
+              if (
+                !Object.prototype.hasOwnProperty.call(this.mods_name, item.GUID)
+              ) {
+                item.Modinfo.BPath = item.Modinfo.Path.replace(
+                  "KK/mods/",
+                  "KKEC/"
+                );
+                item.Modinfo.CPath = item.Modinfo.Path.replace("KK/mods/", "");
+                if (item.Modinfo.GUID === "") {
+                  this.mods_name[item.GUID] = 0;
+                } else {
+                  this.mods_name[item.GUID] = item.Modinfo;
+                }
               }
             });
-            this.mods_length = this.mods_name.length;
+            this.mods_length = Object.keys(this.mods_name).length;
             this.card.CardPlugin?.forEach((item) => {
               if (!this.plugins_name.includes(item.Name)) {
                 this.plugins_name.push(item.Name);
@@ -265,14 +274,42 @@ export default {
             <v-divider></v-divider>
             <v-card-text v-scroll>
               <p />
-              <a
-                v-for="m in mods_name"
-                v-bind:key="m"
-                href="/about"
-                style="display: block; margin-bottom: 10px"
+              <div
+                v-for="(value, key) in mods_name"
+                :key="key"
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 10px;
+                "
               >
-                {{ m }}
-              </a>
+                <span
+                  :style="{
+                    color: value === 0 ? 'red' : 'blue',
+                    pointerEvents: value === 0 ? 'none' : 'auto',
+                  }"
+                  >{{ key }}</span
+                >
+                <div style="display: flex; align-items: center">
+                  <span v-if="value !== 0" style="margin-left: 10px">
+                    <a
+                      :href="`https://sideload.betterrepack.com/download/${value.BPath}`"
+                      >[betterrepack]</a
+                    >
+                  </span>
+                  <span v-if="value !== 0" style="margin-left: 10px">
+                    <a :href="`https://api.carddl.com:5555/mod${value.CPath}`"
+                      >[CardDL]</a
+                    >
+                  </span>
+                  <span v-if="value == 0" style="margin-left: 10px">
+                    <a :href="`https://cardd.co/mods/${key}.html`">{{
+                      $t("help_us_find")
+                    }}</a>
+                  </span>
+                </div>
+              </div>
             </v-card-text>
             <v-divider></v-divider>
 
@@ -302,7 +339,7 @@ export default {
                 v-for="p in plugins_name"
                 v-bind:key="p"
                 href="/about"
-                style="display: block; margin-bottom: 10px"
+                style="display: block; margin-bottom: 10px; pointerevents: none"
               >
                 {{ p }}
               </a>
@@ -333,7 +370,6 @@ export default {
       <!-- ↓↓↓下载，收藏，点赞，举报↓↓↓ -->
       <div class="purchase-options">
         <v-btn class="buy-button">{{ $t("download") }}</v-btn>
-        <v-btn class="buy-button">{{ $t("download_mod_pack") }}</v-btn>
         <v-btn class="buy-button">{{ $t("like") }}</v-btn>
         <v-btn class="buy-button">{{ $t("bookmark") }}</v-btn>
         <v-btn class="buy-button">{{ $t("report") }}</v-btn>

@@ -1,26 +1,27 @@
-import router from "@/router";
-import store from "@/store";
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
+
 const {
   VUE_APP_BASE_URL,
-  VUE_APP_URL_VERSION,
+  VUE_APP_BASE_URL_VERSION,
   VUE_APP_WEB_URL,
-  VUE_APP_URL_HTTPS,
+  VUE_APP_WEB_HTTPS,
+  VUE_APP_BASE_HTTPS,
   NODE_ENV,
 } = process.env;
-const http = VUE_APP_URL_HTTPS === "true" ? "https" : "http";
+const web_http = VUE_APP_WEB_HTTPS === "true" ? "https" : "http";
+const base_http = VUE_APP_BASE_HTTPS === "true" ? "https" : "http";
 console.log(
   NODE_ENV.indexOf("production") === -1
     ? "/web/"
-    : `${http}://${VUE_APP_BASE_URL}`
+    : `${base_http}://${VUE_APP_BASE_URL}`
 );
-export const baseAPIURL = `${http}://${VUE_APP_BASE_URL}/api/${VUE_APP_URL_VERSION}`;
-export const baseWEBURL = `${http}://${VUE_APP_WEB_URL}`;
+export const baseAPIURL = `${base_http}://${VUE_APP_BASE_URL}/api/${VUE_APP_BASE_URL_VERSION}`;
+export const baseWEBURL = `${web_http}://${VUE_APP_WEB_URL}`;
 const request = axios.create({
   withCredentials: true,
   timeout: 60000, // 设置超时时间10s
   // baseURL: NODE_ENV.indexOf('production') !== -1 ? '/web/' : `${http}://${VUE_APP_URL}` // `${http}://${VUE_APP_URL}`  //根据自己配置的反向代理去设置不同环境的baeUrl
-  baseURL: `${http}://${VUE_APP_BASE_URL}/api/${VUE_APP_URL_VERSION}`,
+  baseURL: `${base_http}://${VUE_APP_BASE_URL}/api/${VUE_APP_BASE_URL_VERSION}`,
 });
 /** 添加响应拦截器  **/
 request.interceptors.response.use(
@@ -57,6 +58,7 @@ request.interceptors.response.use(
 );
 
 export default request;
+
 function toast(arg0: string) {
   throw new Error("Function not implemented.");
 }

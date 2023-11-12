@@ -304,9 +304,7 @@ export default {
                     >
                   </span>
                   <span v-if="value == 0" style="margin-left: 10px">
-                    <a :href="`https://cardd.co/mods/${key}.html`">{{
-                      $t("help_us_find")
-                    }}</a>
+                    <a href="/about">{{ $t("help_us_find") }}</a>
                   </span>
                 </div>
               </div>

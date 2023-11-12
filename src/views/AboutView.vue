@@ -12,6 +12,7 @@
             <p>
               如果您遇到任何问题或有任何建议，欢迎随时反馈给我，我会尽快处理和改进。
             </p>
+            <p>如果您想提交某些未收录的Mod也欢迎通过邮件发送</p>
           </v-card-text>
           <v-card-actions>
             <v-btn href="mailto: admin@kkgkd.com"

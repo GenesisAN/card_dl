@@ -23,26 +23,18 @@
               <v-card-title v-if="index === hover" class="card-toolbar">
               </v-card-title>
             </v-img>
-            <v-overlay
-              v-if="index === hover"
-              class="card-overlay clickable"
-              @click="download(card.infoWeb)"
-            >
+            <v-overlay v-if="index === hover" class="card-overlay clickable">
               <div class="card-buttons">
-                <v-btn class="card-button" @click="download(card.path)"
-                  >{{ $t("download") }}
+                <v-btn :href="card.Path" class="card-button">
+                  {{ $t("download") }}
                 </v-btn>
-                <v-btn class="card-button" @click="download(card.path)"
-                  >{{ $t("like") }}
-                </v-btn>
-                <v-btn class="card-button" @click="download(card.path)"
-                  >{{ $t("bookmark") }}
-                </v-btn>
+                <v-btn class="card-button">{{ $t("like") }} </v-btn>
+                <v-btn class="card-button">{{ $t("bookmark") }} </v-btn>
               </div>
             </v-overlay>
           </div>
           <v-card-title class="card-title">
-            <a :href="card.infoWeb" target="_blank" rel="noopener noreferrer">{{
+            <a :href="card.infoWeb" rel="noopener noreferrer" target="_blank">{{
               truncateString(card.Title, 8)
             }}</a>
           </v-card-title>
@@ -93,6 +85,10 @@ export default Vue.extend({
       this.list.forEach((card, index) => {
         card.animationDelay = index * delayIncrement;
       });
+    },
+    downloadFile(url) {
+      // 这里可以添加一些逻辑
+      window.location.href = url;
     },
     infiniteHandler($state) {
       this.$store

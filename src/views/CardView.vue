@@ -204,6 +204,7 @@ export default {
     </v-btn>
     <!-- ↓↓↓悬浮的下载按钮↓↓↓ -->
     <v-btn
+      :href="card.Path"
       bottom
       color="pink"
       dark
@@ -367,7 +368,7 @@ export default {
       </div>
       <!-- ↓↓↓下载，收藏，点赞，举报↓↓↓ -->
       <div class="purchase-options">
-        <v-btn class="buy-button">{{ $t("download") }}</v-btn>
+        <v-btn :href="card.Path" class="buy-button">{{ $t("download") }}</v-btn>
         <v-btn class="buy-button">{{ $t("like") }}</v-btn>
         <v-btn class="buy-button">{{ $t("bookmark") }}</v-btn>
         <v-btn class="buy-button">{{ $t("report") }}</v-btn>
